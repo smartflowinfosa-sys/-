@@ -8,8 +8,6 @@
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8B3A2A">
-    
-    <!-- خدعة إجبار الآيفون على قراءة الأيقونة الجديدة بدلاً من القديمة -->
     <link rel="apple-touch-icon" href="icon-192.png?v=2">
     <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png?v=2">
     <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png?v=2">
@@ -22,7 +20,6 @@
     <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- PDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -137,39 +134,11 @@
         .modal-lg { width: 900px; }
 
         /* Checkbox Styling */
-        .checkbox-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            background: rgba(0,0,0,0.03);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .checkbox-box:hover {
-            background: rgba(0,0,0,0.06);
-        }
-        .checkbox-box input[type="checkbox"] {
-            width: 22px !important;
-            height: 22px !important;
-            margin: 0 !important;
-            cursor: pointer;
-            flex-shrink: 0;
-            accent-color: var(--primary);
-        }
-        .checkbox-box span {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-        .perm-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
+        .checkbox-box { display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .checkbox-box:hover { background: rgba(0,0,0,0.06); }
+        .checkbox-box input[type="checkbox"] { width: 22px !important; height: 22px !important; margin: 0 !important; cursor: pointer; flex-shrink: 0; accent-color: var(--primary); }
+        .checkbox-box span { font-size: 1rem; font-weight: 500; color: var(--text); }
+        .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
 
         /* Cloud Sync Mini Loader */
         #cloud-loader { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 8px 20px; border-radius: 50px; z-index: 99999; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.95rem; font-weight: bold; pointer-events: none; transition: opacity 0.3s ease; }
@@ -208,7 +177,7 @@
 
     <div id="toast-container"></div>
 
-    <!-- Login View (نظام الدخول المباشر باسم المستخدم) -->
+    <!-- Login View -->
     <div id="login-view" class="hidden">
         <div class="login-box">
             <h1>الذوق للمناسبات</h1>
@@ -238,6 +207,7 @@
             <div id="header">
                 <h2 id="page-title">المبيعات</h2>
                 <div class="header-actions">
+                    <span id="logged-user-name" style="font-weight:bold; color:var(--primary); font-size:0.9rem;"></span>
                     <i class="fas fa-user-circle" style="font-size: 2.2rem; color: var(--gold);"></i>
                 </div>
             </div>
@@ -445,6 +415,28 @@
                     </div>
                 </div>
 
+                <!-- Audit Logs (جديد) -->
+                <div id="sec-logs" class="section hidden">
+                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px;">
+                        <h3>سجل نشاطات النظام (Audit Log)</h3>
+                        <button class="btn btn-outline" onclick="renderLogs()"><i class="fas fa-sync"></i> تحديث السجل</button>
+                    </div>
+                    <div class="card">
+                        <table id="logs-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:right">التاريخ والوقت</th>
+                                    <th>الموظف</th>
+                                    <th>العملية</th>
+                                    <th>القسم</th>
+                                    <th>التفاصيل</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Settings -->
                 <div id="sec-settings" class="section hidden">
                     <div class="grid grid-2">
@@ -540,7 +532,7 @@
         const supabaseKey = 'sb_publishable_IeENdRtg7xeYgD_zvXCrlw_UZXIxVRo';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        let db = { users: [], products: [], categories: [], invoices: [], customers: [], expenses: [], settings: {} };
+        let db = { users: [], products: [], categories: [], invoices: [], customers: [], expenses: [], logs: [], settings: {} };
         let currentUser = null;
         let charts = {};
         
@@ -553,6 +545,7 @@
             'stock': { icon: 'fa-boxes', label: 'إدارة المخزون' },
             'expenses': { icon: 'fa-money-bill-wave', label: 'المصروفات' },
             'users': { icon: 'fa-user-shield', label: 'المستخدمين' },
+            'logs': { icon: 'fa-history', label: 'سجل النشاطات' },
             'settings': { icon: 'fa-cog', label: 'الإعدادات' }
         };
 
@@ -607,6 +600,58 @@
             }
         }
 
+        // ================= Audit Log Function =================
+        async function logAction(actionType, entity, details) {
+            if(!currentUser) return;
+            const logEntry = {
+                user_name: currentUser.name || currentUser.username,
+                action_type: actionType,
+                entity: entity,
+                details: details
+            };
+            try {
+                // نرسل السجل للسحابة بصمت دون تعطيل واجهة المستخدم
+                await supabaseClient.from('thawq_logs').insert([logEntry]);
+            } catch(e) {
+                console.error("Failed to log action:", e);
+            }
+        }
+
+        async function renderLogs() {
+            showLoading('جاري جلب السجلات...');
+            const { data, error } = await supabaseClient.from('thawq_logs').select('*').order('created_at', { ascending: false }).limit(100);
+            hideLoading();
+            if(error) return showToast('تعذر جلب السجلات', 'error');
+            
+            const tbody = document.querySelector('#logs-table tbody');
+            tbody.innerHTML = '';
+            
+            if(!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد سجلات بعد</td></tr>';
+                return;
+            }
+
+            data.forEach(log => {
+                const dateObj = new Date(log.created_at);
+                const dateStr = dateObj.toLocaleDateString('en-GB') + ' ' + dateObj.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+                
+                let actionColor = '#333';
+                if(log.action_type === 'إضافة') actionColor = 'var(--success)';
+                if(log.action_type === 'تعديل') actionColor = 'var(--warning)';
+                if(log.action_type === 'حذف') actionColor = 'var(--danger)';
+                if(log.action_type === 'دخول') actionColor = 'var(--primary)';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="en-numbers" style="text-align:right; font-size:0.85rem;">${dateStr}</td>
+                        <td style="font-weight:bold;">${log.user_name}</td>
+                        <td><span style="color:${actionColor}; font-weight:bold;">${log.action_type}</span></td>
+                        <td>${log.entity}</td>
+                        <td style="font-size:0.9rem; color:var(--text-muted);">${log.details}</td>
+                    </tr>`;
+            });
+        }
+
         function showLoading(msg = 'جاري المزامنة...') { 
             document.getElementById('loader-text').innerText = msg;
             document.getElementById('cloud-loader').classList.remove('hidden'); 
@@ -654,12 +699,12 @@
             const u = document.getElementById('login-user').value.trim();
             const p = document.getElementById('login-pass').value;
             
-            // قراءة مباشرة من جدول قاعدة البيانات
             const user = db.users.find(x => x.username === u && x.pass === p && x.active);
             
             if (user) {
                 currentUser = user;
                 sessionStorage.setItem('thawq_session', JSON.stringify(user));
+                logAction('دخول', 'نظام', 'تسجيل دخول للنظام'); // تسجيل الدخول
                 loginSuccess();
             } else {
                 showToast('اسم المستخدم أو كلمة المرور خاطئة، أو الحساب معطل', 'error');
@@ -669,10 +714,12 @@
         function loginSuccess() {
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('app-view').classList.remove('hidden');
+            document.getElementById('logged-user-name').innerText = `أهلاً، ${currentUser.name}`;
             renderSidebar();
         }
 
         function logout() {
+            logAction('خروج', 'نظام', 'تسجيل خروج من النظام');
             currentUser = null;
             sessionStorage.removeItem('thawq_session');
             document.getElementById('app-view').classList.add('hidden');
@@ -687,7 +734,7 @@
             if(!db.settings.navOrder) db.settings.navOrder = Object.keys(navDict);
 
             db.settings.navOrder.forEach(key => {
-                if(currentUser.permissions[key]) {
+                if(currentUser.permissions[key] || (key === 'logs' && currentUser.username.includes('admin'))) {
                     if(!firstAllowed) firstAllowed = key;
                     navContainer.innerHTML += `<div class="nav-item" data-target="${key}" onclick="navigate('${key}')">
                         <i class="fas ${navDict[key].icon}"></i> ${navDict[key].label}
@@ -713,6 +760,7 @@
             if(id==='customers') renderCustomers();
             if(id==='products') { renderProducts(); loadCatFilter(); }
             if(id==='users') renderUsers();
+            if(id==='logs') renderLogs();
             if(id==='settings') loadSettingsUI();
         }
 
@@ -809,6 +857,7 @@
             showLoading();
             await supabaseClient.from('thawq_settings').update({ break_even_target: val }).eq('id', 1);
             db.settings.breakEvenTarget = val;
+            logAction('تعديل', 'إعدادات', `تعديل هدف التكلفة إلى ${val}`);
             hideLoading();
             renderPerformance();
             showToast('تم تحديث هدف التكلفة بنجاح');
@@ -1016,10 +1065,12 @@
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 const idx = db.expenses.findIndex(x => x.id === id);
                 if(idx > -1) db.expenses[idx] = { id, customCategory: dataObj.custom_category, ...dataObj };
+                logAction('تعديل', 'مصروف', `تعديل مصروف بقيمة ${amount}`);
             } else {
                 const { data, error } = await supabaseClient.from('thawq_expenses').insert([dataObj]).select();
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 if(data && data[0]) db.expenses.unshift({ id: data[0].id, customCategory: data[0].custom_category, ...data[0] });
+                logAction('إضافة', 'مصروف', `تسجيل مصروف جديد بقيمة ${amount}`);
             }
             hideLoading(); closeModal(); renderExpenses(); showToast('تم حفظ المصروف السحابي بنجاح');
         }
@@ -1029,6 +1080,7 @@
                 showLoading();
                 await supabaseClient.from('thawq_expenses').delete().eq('id', id);
                 db.expenses = db.expenses.filter(e => e.id !== id);
+                logAction('حذف', 'مصروف', `حذف مصروف`);
                 hideLoading(); renderExpenses(); showToast('تم الحذف');
             }
         }
@@ -1104,6 +1156,7 @@
             document.getElementById('exp-print-var').innerText = varExp.toFixed(2);
             document.getElementById('exp-print-total').innerText = total.toFixed(2);
 
+            logAction('طباعة', 'مصروفات', 'طباعة تقرير مصروفات');
             closeModal(); document.getElementById('expense-print-view').classList.add('active-print');
             window.print(); setTimeout(() => document.getElementById('expense-print-view').classList.remove('active-print'), 1000);
         }
@@ -1134,6 +1187,7 @@
             const { data, error } = await supabaseClient.from('thawq_categories').insert([{ name_ar: n }]).select();
             if(error) { hideLoading(); return showToast(error.message, 'error'); }
             if(data && data[0]) db.categories.push({ id: data[0].id, nameAr: data[0].name_ar });
+            logAction('إضافة', 'صنف', `إضافة فئة جديدة: ${n}`);
             hideLoading(); openCategoriesModal(); showToast('تم حفظ الفئة بالسحابة');
         }
         
@@ -1144,6 +1198,7 @@
                 const { error } = await supabaseClient.from('thawq_categories').update({ name_ar: n }).eq('id', id);
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 const c = db.categories.find(x=>x.id==id); if(c) c.nameAr=n; 
+                logAction('تعديل', 'صنف', `تعديل فئة من ${oldName} إلى ${n}`);
                 hideLoading(); openCategoriesModal(); 
             }
         }
@@ -1153,6 +1208,7 @@
                 showLoading();
                 await supabaseClient.from('thawq_categories').delete().eq('id', id);
                 db.categories = db.categories.filter(x=>x.id!=id); 
+                logAction('حذف', 'صنف', `حذف فئة`);
                 hideLoading(); openCategoriesModal(); 
             }
         }
@@ -1227,10 +1283,12 @@
                 const { error } = await supabaseClient.from('thawq_products').update(dataObj).eq('id', id);
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 const idx = db.products.findIndex(x => x.id === id); if(idx > -1) db.products[idx] = { id, nameAr: dataObj.name_ar, catId: dataObj.cat_id, ...dataObj };
+                logAction('تعديل', 'صنف', `تعديل بيانات الصنف: ${nameAr}`);
             } else {
                 const { data, error } = await supabaseClient.from('thawq_products').insert([dataObj]).select();
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 if(data && data[0]) db.products.push({ id: data[0].id, nameAr: data[0].name_ar, catId: data[0].cat_id, ...data[0] });
+                logAction('إضافة', 'صنف', `إضافة صنف جديد: ${nameAr}`);
             }
             hideLoading(); closeModal(); renderProducts(); showToast('تم الحفظ بالسحابة بنجاح');
         }
@@ -1238,7 +1296,9 @@
         async function deleteProduct(id) {
             if(confirm('هل أنت متأكد من حذف الصنف نهائيا من السحابة؟')) { 
                 showLoading(); await supabaseClient.from('thawq_products').delete().eq('id', id);
-                db.products = db.products.filter(p => p.id !== id); hideLoading(); renderProducts(); showToast('تم الحذف');
+                db.products = db.products.filter(p => p.id !== id); 
+                logAction('حذف', 'صنف', `حذف صنف من النظام`);
+                hideLoading(); renderProducts(); showToast('تم الحذف');
             }
         }
 
@@ -1292,8 +1352,11 @@
 
         async function deleteInvoice(id) { 
             if(confirm('هل أنت متأكد من حذف الفاتورة نهائيا من السحابة؟')) { 
+                const inv = db.invoices.find(i => i.id === id);
                 showLoading('جاري الحذف...'); await supabaseClient.from('thawq_invoices').delete().eq('id', id);
-                db.invoices=db.invoices.filter(i=>i.id!=id); hideLoading(); renderInvoices(); closeModal(); showToast('تم الحذف');
+                db.invoices=db.invoices.filter(i=>i.id!=id); 
+                logAction('حذف', 'فاتورة', `حذف الفاتورة رقم ${inv ? inv.invNumber : id}`);
+                hideLoading(); renderInvoices(); closeModal(); showToast('تم الحذف');
             } 
         }
 
@@ -1332,6 +1395,7 @@
                 showLoading('جاري تحديث الحالة...');
                 await supabaseClient.from('thawq_invoices').update({ status: newStatus, paid_amount: newPaid }).eq('id', id);
                 inv.status = newStatus; inv.paidAmount = newPaid;
+                logAction('تعديل', 'فاتورة', `تعديل حالة الفاتورة ${inv.invNumber} إلى ${newStatus}`);
                 hideLoading(); renderInvoices(); viewInvoiceDetails(id); showToast('تم التعديل بالسحابة بنجاح');
             }
         }
@@ -1354,6 +1418,7 @@
                 document.getElementById('print-paid-row').style.display = 'block'; document.getElementById('print-paid-amount').innerText = (inv.paidAmount !== undefined ? parseFloat(inv.paidAmount) : parseFloat(inv.total)).toFixed(2);
             } else { document.getElementById('print-paid-row').style.display = 'none'; }
 
+            logAction('طباعة', 'فاتورة', `طباعة الفاتورة ${inv.invNumber}`);
             document.getElementById('print-view').classList.add('active-print');
             window.print(); setTimeout(() => document.getElementById('print-view').classList.remove('active-print'), 1000);
         }
@@ -1385,6 +1450,7 @@
             showLoading('جاري إنشاء الـ PDF...');
             html2pdf().set(opt).from(element).save().then(() => {
                 element.style.display = 'none'; element.style.position = 'static'; element.style.top = 'auto'; hideLoading();
+                logAction('إرسال', 'فاتورة', `إرسال الفاتورة ${inv.invNumber} عبر الواتساب`);
                 showToast('تم تنزيل الفاتورة بصيغة PDF، جاري فتح الواتساب...');
                 let phone = '';
                 if(inv.customerId) { const c = db.customers.find(x => x.id == inv.customerId); if(c && c.phone) phone = c.phone; }
@@ -1469,6 +1535,7 @@
             if(data && data[0]) {
                 db.invoices.unshift({ id: data[0].id, invNumber: data[0].inv_number, date: data[0].date, customerId: data[0].customer_id, customerName: data[0].customer_name, items: data[0].items, subtotal: data[0].subtotal, discountVal: data[0].discount_val, total: data[0].total, status: data[0].status, paidAmount: data[0].paid_amount });
             }
+            logAction('إضافة', 'فاتورة', `إصدار فاتورة جديدة للعميل ${cleanCustName} بقيمة ${t.total.toFixed(2)}`);
             hideLoading(); closeModal(); renderInvoices(); showToast('تم إصدار الفاتورة وحفظها بالسحابة');
         }
 
@@ -1519,15 +1586,25 @@
             const n = document.getElementById('nc-name').value; if(!n) return showToast('الرجاء إدخال اسم العميل', 'error');
             const dataObj = { name: n, phone: document.getElementById('nc-phone').value, address1: document.getElementById('nc-addr1').value, address2: document.getElementById('nc-addr2').value, notes: document.getElementById('nc-notes').value };
             showLoading('جاري الحفظ...');
-            if(id) { await supabaseClient.from('thawq_customers').update(dataObj).eq('id', id); const idx = db.customers.findIndex(x => x.id === id); if(idx > -1) db.customers[idx] = { id, ...dataObj }; } 
-            else { const { data } = await supabaseClient.from('thawq_customers').insert([dataObj]).select(); if(data && data[0]) db.customers.push({ id: data[0].id, ...dataObj }); }
+            if(id) { 
+                await supabaseClient.from('thawq_customers').update(dataObj).eq('id', id); 
+                const idx = db.customers.findIndex(x => x.id === id); if(idx > -1) db.customers[idx] = { id, ...dataObj }; 
+                logAction('تعديل', 'عميل', `تحديث بيانات العميل: ${n}`);
+            } else { 
+                const { data } = await supabaseClient.from('thawq_customers').insert([dataObj]).select(); 
+                if(data && data[0]) db.customers.push({ id: data[0].id, ...dataObj }); 
+                logAction('إضافة', 'عميل', `تسجيل عميل جديد: ${n}`);
+            }
             hideLoading(); renderCustomers(); if(id) viewCustomerDetails(id); else closeModal(); showToast('تم الحفظ في السحابة');
         }
 
         async function deleteCustomer(id) {
             if(confirm('هل أنت متأكد من حذف هذا العميل نهائيا من السحابة؟')) {
+                const c = db.customers.find(x => x.id === id);
                 showLoading('جاري الحذف...'); await supabaseClient.from('thawq_customers').delete().eq('id', id);
-                db.customers = db.customers.filter(c => c.id !== id); hideLoading(); renderCustomers(); closeModal(); showToast('تم الحذف');
+                db.customers = db.customers.filter(x => x.id !== id); 
+                logAction('حذف', 'عميل', `حذف العميل: ${c ? c.name : id}`);
+                hideLoading(); renderCustomers(); closeModal(); showToast('تم الحذف');
             }
         }
 
@@ -1601,9 +1678,11 @@
                 await supabaseClient.from('thawq_users').update(d).eq('id', id);
                 const idx = db.users.findIndex(x=>x.id==id);
                 if(idx > -1) db.users[idx] = {id, ...d};
+                logAction('تعديل', 'نظام', `تعديل صلاحيات المستخدم: ${userInput}`);
             } else {
                 const {data} = await supabaseClient.from('thawq_users').insert([d]).select();
                 if(data && data[0]) db.users.push({id: data[0].id, ...d});
+                logAction('إضافة', 'نظام', `إنشاء مستخدم جديد: ${userInput}`);
             }
             hideLoading();
             closeModal(); renderUsers();
@@ -1639,6 +1718,7 @@
             const dataObj = { phone: document.getElementById('set-phone').value, vat_number: document.getElementById('set-vatNumber').value, theme: document.getElementById('set-theme').value };
             showLoading('جاري الحفظ...'); await supabaseClient.from('thawq_settings').update(dataObj).eq('id', 1);
             db.settings.phone = dataObj.phone; db.settings.vatNumber = dataObj.vat_number; db.settings.theme = dataObj.theme;
+            logAction('تعديل', 'إعدادات', `تم تغيير إعدادات المتجر الأساسية`);
             applyThemeSetting(); renderSidebar(); hideLoading(); showToast('تم الحفظ السحابي');
         }
         function applyThemeSetting() { applyTheme(document.getElementById('set-theme').value); }
@@ -1650,7 +1730,6 @@
             
             let isLoggedIn = false;
             
-            // قراءة الجلسة بشكل مباشر من التخزين المحلي بدون Supabase Auth
             if(sessionStorage.getItem('thawq_session')) {
                 const savedSession = JSON.parse(sessionStorage.getItem('thawq_session'));
                 const verifyUser = db.users.find(u => u.username === savedSession.username && u.active);
