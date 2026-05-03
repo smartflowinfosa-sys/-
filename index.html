@@ -415,7 +415,7 @@
                     </div>
                 </div>
 
-                <!-- Audit Logs (جديد) -->
+                <!-- Audit Logs (محمي بصلاحية) -->
                 <div id="sec-logs" class="section hidden">
                     <div class="flex" style="justify-content: space-between; margin-bottom: 20px;">
                         <h3>سجل نشاطات النظام (Audit Log)</h3>
@@ -494,6 +494,8 @@
         </div>
         <div style="margin-top: 40px; text-align: center;" dir="rtl">
             <p id="print-thanks">شكرا لاختياركم متجر الذوق للمناسبات</p>
+            <!-- الكاشير المطبوع في الفاتورة -->
+            <p style="font-size:0.9rem; margin-top:10px; color:var(--text-muted);">الكاشير: <strong id="print-cashier"></strong></p>
         </div>
     </div>
 
@@ -638,7 +640,7 @@
                 let actionColor = '#333';
                 if(log.action_type === 'إضافة') actionColor = 'var(--success)';
                 if(log.action_type === 'تعديل') actionColor = 'var(--warning)';
-                if(log.action_type === 'حذف') actionColor = 'var(--danger)';
+                if(log.action_type === 'حذف' || log.action_type === 'إلغاء') actionColor = 'var(--danger)';
                 if(log.action_type === 'دخول') actionColor = 'var(--primary)';
 
                 tbody.innerHTML += `
@@ -704,7 +706,7 @@
             if (user) {
                 currentUser = user;
                 sessionStorage.setItem('thawq_session', JSON.stringify(user));
-                logAction('دخول', 'نظام', 'تسجيل دخول للنظام'); // تسجيل الدخول
+                logAction('دخول', 'نظام', 'تسجيل دخول للنظام'); 
                 loginSuccess();
             } else {
                 showToast('اسم المستخدم أو كلمة المرور خاطئة، أو الحساب معطل', 'error');
@@ -714,7 +716,7 @@
         function loginSuccess() {
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('app-view').classList.remove('hidden');
-            document.getElementById('logged-user-name').innerText = `أهلاً، ${currentUser.name}`;
+            document.getElementById('logged-user-name').innerText = `الكاشير: ${currentUser.name}`;
             renderSidebar();
         }
 
@@ -734,7 +736,8 @@
             if(!db.settings.navOrder) db.settings.navOrder = Object.keys(navDict);
 
             db.settings.navOrder.forEach(key => {
-                if(currentUser.permissions[key] || (key === 'logs' && currentUser.username.includes('admin'))) {
+                // يعرض السجل فقط لمن يملك الصلاحية الصريحة (المدير)
+                if(currentUser.permissions[key]) {
                     if(!firstAllowed) firstAllowed = key;
                     navContainer.innerHTML += `<div class="nav-item" data-target="${key}" onclick="navigate('${key}')">
                         <i class="fas ${navDict[key].icon}"></i> ${navDict[key].label}
@@ -1065,12 +1068,12 @@
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 const idx = db.expenses.findIndex(x => x.id === id);
                 if(idx > -1) db.expenses[idx] = { id, customCategory: dataObj.custom_category, ...dataObj };
-                logAction('تعديل', 'مصروف', `تعديل مصروف بقيمة ${amount}`);
+                logAction('تعديل', 'مصروف', `تعديل مصروف بقيمة ${amount} ريال`);
             } else {
                 const { data, error } = await supabaseClient.from('thawq_expenses').insert([dataObj]).select();
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 if(data && data[0]) db.expenses.unshift({ id: data[0].id, customCategory: data[0].custom_category, ...data[0] });
-                logAction('إضافة', 'مصروف', `تسجيل مصروف جديد بقيمة ${amount}`);
+                logAction('إضافة', 'مصروف', `إضافة مصروف جديد بقيمة ${amount} ريال`);
             }
             hideLoading(); closeModal(); renderExpenses(); showToast('تم حفظ المصروف السحابي بنجاح');
         }
@@ -1080,7 +1083,7 @@
                 showLoading();
                 await supabaseClient.from('thawq_expenses').delete().eq('id', id);
                 db.expenses = db.expenses.filter(e => e.id !== id);
-                logAction('حذف', 'مصروف', `حذف مصروف`);
+                logAction('حذف', 'مصروف', `قام الموظف بحذف مصروف من النظام`);
                 hideLoading(); renderExpenses(); showToast('تم الحذف');
             }
         }
@@ -1156,7 +1159,7 @@
             document.getElementById('exp-print-var').innerText = varExp.toFixed(2);
             document.getElementById('exp-print-total').innerText = total.toFixed(2);
 
-            logAction('طباعة', 'مصروفات', 'طباعة تقرير مصروفات');
+            logAction('طباعة', 'مصروفات', 'تم طباعة تقرير للمصروفات');
             closeModal(); document.getElementById('expense-print-view').classList.add('active-print');
             window.print(); setTimeout(() => document.getElementById('expense-print-view').classList.remove('active-print'), 1000);
         }
@@ -1187,7 +1190,7 @@
             const { data, error } = await supabaseClient.from('thawq_categories').insert([{ name_ar: n }]).select();
             if(error) { hideLoading(); return showToast(error.message, 'error'); }
             if(data && data[0]) db.categories.push({ id: data[0].id, nameAr: data[0].name_ar });
-            logAction('إضافة', 'صنف', `إضافة فئة جديدة: ${n}`);
+            logAction('إضافة', 'فئة', `تم إنشاء فئة أصناف جديدة باسم: ${n}`);
             hideLoading(); openCategoriesModal(); showToast('تم حفظ الفئة بالسحابة');
         }
         
@@ -1198,7 +1201,7 @@
                 const { error } = await supabaseClient.from('thawq_categories').update({ name_ar: n }).eq('id', id);
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 const c = db.categories.find(x=>x.id==id); if(c) c.nameAr=n; 
-                logAction('تعديل', 'صنف', `تعديل فئة من ${oldName} إلى ${n}`);
+                logAction('تعديل', 'فئة', `تم تعديل الفئة من ${oldName} إلى ${n}`);
                 hideLoading(); openCategoriesModal(); 
             }
         }
@@ -1208,7 +1211,7 @@
                 showLoading();
                 await supabaseClient.from('thawq_categories').delete().eq('id', id);
                 db.categories = db.categories.filter(x=>x.id!=id); 
-                logAction('حذف', 'صنف', `حذف فئة`);
+                logAction('حذف', 'فئة', `قام الموظف بحذف فئة من النظام`);
                 hideLoading(); openCategoriesModal(); 
             }
         }
@@ -1283,12 +1286,12 @@
                 const { error } = await supabaseClient.from('thawq_products').update(dataObj).eq('id', id);
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 const idx = db.products.findIndex(x => x.id === id); if(idx > -1) db.products[idx] = { id, nameAr: dataObj.name_ar, catId: dataObj.cat_id, ...dataObj };
-                logAction('تعديل', 'صنف', `تعديل بيانات الصنف: ${nameAr}`);
+                logAction('تعديل', 'صنف', `تم تعديل بيانات الصنف: ${nameAr}`);
             } else {
                 const { data, error } = await supabaseClient.from('thawq_products').insert([dataObj]).select();
                 if(error) { hideLoading(); return showToast(error.message, 'error'); }
                 if(data && data[0]) db.products.push({ id: data[0].id, nameAr: data[0].name_ar, catId: data[0].cat_id, ...data[0] });
-                logAction('إضافة', 'صنف', `إضافة صنف جديد: ${nameAr}`);
+                logAction('إضافة', 'صنف', `تمت إضافة صنف جديد للمنيو: ${nameAr}`);
             }
             hideLoading(); closeModal(); renderProducts(); showToast('تم الحفظ بالسحابة بنجاح');
         }
@@ -1297,7 +1300,7 @@
             if(confirm('هل أنت متأكد من حذف الصنف نهائيا من السحابة؟')) { 
                 showLoading(); await supabaseClient.from('thawq_products').delete().eq('id', id);
                 db.products = db.products.filter(p => p.id !== id); 
-                logAction('حذف', 'صنف', `حذف صنف من النظام`);
+                logAction('حذف', 'صنف', `قام الموظف بحذف صنف من النظام`);
                 hideLoading(); renderProducts(); showToast('تم الحذف');
             }
         }
@@ -1307,7 +1310,7 @@
             const tbody = document.querySelector('#invoices-table tbody'); tbody.innerHTML = '';
             const search = document.getElementById('inv-search').value.toLowerCase();
             db.invoices.filter(i => i.invNumber.toLowerCase().includes(search) || (i.customerName && i.customerName.toLowerCase().includes(search))).forEach(inv => {
-                let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : 'var(--danger)');
+                let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : (inv.status==='ملغاة' ? '#666' : 'var(--danger)'));
                 tbody.innerHTML += `
                     <tr class="clickable-row" onclick="viewInvoiceDetails(${inv.id})">
                         <td class="en-numbers" style="text-align:right">${inv.invNumber}</td><td class="en-numbers" style="text-align:right; font-size:0.9rem;">${inv.date}</td>
@@ -1321,7 +1324,7 @@
             const inv = db.invoices.find(i => i.id === id); if(!inv) return;
             let itemsHtml = '';
             inv.items.forEach(i => { itemsHtml += `<tr><td style="text-align:right">${i.name}</td><td class="en-numbers-center">${i.qty}</td><td class="en-numbers-center">${parseFloat(i.price).toFixed(2)}</td><td class="en-numbers-center">${(i.price*i.qty).toFixed(2)}</td></tr>`; });
-            let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : 'var(--danger)');
+            let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : (inv.status==='ملغاة' ? '#666' : 'var(--danger)'));
 
             showModal(`
                 <div class="flex" style="justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
@@ -1344,18 +1347,18 @@
                     </div>
                     <div class="flex" style="gap:10px;">
                         <button class="icon-btn-solid warning" onclick="editInvoiceStatus(${inv.id})" title="تعديل الحالة"><i class="fas fa-edit"></i></button>
-                        ${currentUser.permissions['users'] ? `<button class="icon-btn-solid danger" onclick="deleteInvoice(${inv.id})" title="حذف الفاتورة"><i class="fas fa-trash"></i></button>` : ''}
+                        ${currentUser.permissions['users'] ? `<button class="icon-btn-solid danger" onclick="deleteInvoice(${inv.id})" title="حذف الفاتورة نهائياً"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
                 </div>
             `, 'modal-lg');
         }
 
         async function deleteInvoice(id) { 
-            if(confirm('هل أنت متأكد من حذف الفاتورة نهائيا من السحابة؟')) { 
+            if(confirm('تحذير: هل أنت متأكد من حذف الفاتورة نهائياً؟ (يُفضل استخدام خيار تعديل الحالة إلى "ملغاة" بدلاً من الحذف لضمان الدقة المحاسبية)')) { 
                 const inv = db.invoices.find(i => i.id === id);
                 showLoading('جاري الحذف...'); await supabaseClient.from('thawq_invoices').delete().eq('id', id);
                 db.invoices=db.invoices.filter(i=>i.id!=id); 
-                logAction('حذف', 'فاتورة', `حذف الفاتورة رقم ${inv ? inv.invNumber : id}`);
+                logAction('حذف', 'فاتورة', `تم حذف الفاتورة رقم ${inv ? inv.invNumber : id} نهائياً من النظام`);
                 hideLoading(); renderInvoices(); closeModal(); showToast('تم الحذف');
             } 
         }
@@ -1370,6 +1373,7 @@
                     <option value="غير مدفوع" ${inv.status==='غير مدفوع'?'selected':''}>غير مدفوع</option>
                     <option value="مدفوع جزئيا" ${inv.status==='مدفوع جزئيا'?'selected':''}>مدفوع جزئيا</option>
                     <option value="مدفوع بالكامل" ${inv.status==='مدفوع بالكامل'?'selected':''}>مدفوع بالكامل</option>
+                    <option value="ملغاة" ${inv.status==='ملغاة'?'selected':''}>ملغاة (إلغاء الفاتورة)</option>
                 </select>
                 <div id="paid-amount-container" style="display:${inv.status==='مدفوع جزئيا'?'block':'none'}; margin-top:15px;">
                     <label>المبلغ المدفوع (الدفعة المقدمة):</label>
@@ -1377,7 +1381,7 @@
                 </div>
                 <div class="flex" style="justify-content:flex-end; gap:10px; margin-top:20px;">
                     <button class="btn btn-outline" onclick="viewInvoiceDetails(${inv.id})">إلغاء</button>
-                    <button class="btn btn-primary" onclick="saveInvoiceStatus(${inv.id})">حفظ</button>
+                    <button class="btn btn-primary" onclick="saveInvoiceStatus(${inv.id})">حفظ التعديل</button>
                 </div>
             `);
         }
@@ -1389,13 +1393,16 @@
             if(inv) {
                 const newStatus = document.getElementById('edit-inv-status').value; let newPaid = 0;
                 if(newStatus === 'مدفوع بالكامل') newPaid = inv.total;
-                else if(newStatus === 'غير مدفوع') newPaid = 0;
+                else if(newStatus === 'غير مدفوع' || newStatus === 'ملغاة') newPaid = 0;
                 else newPaid = parseFloat(document.getElementById('edit-paid-amount').value) || 0;
                 
                 showLoading('جاري تحديث الحالة...');
                 await supabaseClient.from('thawq_invoices').update({ status: newStatus, paid_amount: newPaid }).eq('id', id);
                 inv.status = newStatus; inv.paidAmount = newPaid;
-                logAction('تعديل', 'فاتورة', `تعديل حالة الفاتورة ${inv.invNumber} إلى ${newStatus}`);
+                
+                let actionVerb = newStatus === 'ملغاة' ? 'إلغاء' : 'تعديل';
+                logAction(actionVerb, 'فاتورة', `تم تغيير حالة الفاتورة رقم ${inv.invNumber} إلى: ${newStatus}`);
+                
                 hideLoading(); renderInvoices(); viewInvoiceDetails(id); showToast('تم التعديل بالسحابة بنجاح');
             }
         }
@@ -1409,6 +1416,10 @@
             document.getElementById('print-date').innerText = inv.date;
             document.getElementById('print-customer').innerText = inv.customerName;
             document.getElementById('print-status').innerText = inv.status;
+            
+            // كتابة اسم الكاشير الذي قام بالطباعة
+            document.getElementById('print-cashier').innerText = currentUser.name || currentUser.username;
+
             const tbody = document.getElementById('print-items'); tbody.innerHTML = '';
             inv.items.forEach(i => { tbody.innerHTML += `<tr><td style="text-align:right">${i.name}</td><td class="en-numbers-center">${i.qty}</td><td class="en-numbers-center">${parseFloat(i.price).toFixed(2)}</td><td class="en-numbers-center">${(i.price*i.qty).toFixed(2)}</td></tr>`; });
             document.getElementById('print-subtotal').innerText = inv.subtotal.toFixed(2);
@@ -1418,7 +1429,7 @@
                 document.getElementById('print-paid-row').style.display = 'block'; document.getElementById('print-paid-amount').innerText = (inv.paidAmount !== undefined ? parseFloat(inv.paidAmount) : parseFloat(inv.total)).toFixed(2);
             } else { document.getElementById('print-paid-row').style.display = 'none'; }
 
-            logAction('طباعة', 'فاتورة', `طباعة الفاتورة ${inv.invNumber}`);
+            logAction('طباعة', 'فاتورة', `طباعة الفاتورة رقم ${inv.invNumber} للعميل ${inv.customerName}`);
             document.getElementById('print-view').classList.add('active-print');
             window.print(); setTimeout(() => document.getElementById('print-view').classList.remove('active-print'), 1000);
         }
@@ -1432,6 +1443,8 @@
             document.getElementById('print-date').innerText = inv.date;
             document.getElementById('print-customer').innerText = inv.customerName;
             document.getElementById('print-status').innerText = inv.status;
+            document.getElementById('print-cashier').innerText = currentUser.name || currentUser.username;
+            
             const tbody = document.getElementById('print-items'); tbody.innerHTML = '';
             inv.items.forEach(i => { tbody.innerHTML += `<tr><td style="text-align:right">${i.name}</td><td class="en-numbers-center">${i.qty}</td><td class="en-numbers-center">${parseFloat(i.price).toFixed(2)}</td><td class="en-numbers-center">${(i.price*i.qty).toFixed(2)}</td></tr>`; });
             document.getElementById('print-subtotal').innerText = inv.subtotal.toFixed(2);
@@ -1450,7 +1463,7 @@
             showLoading('جاري إنشاء الـ PDF...');
             html2pdf().set(opt).from(element).save().then(() => {
                 element.style.display = 'none'; element.style.position = 'static'; element.style.top = 'auto'; hideLoading();
-                logAction('إرسال', 'فاتورة', `إرسال الفاتورة ${inv.invNumber} عبر الواتساب`);
+                logAction('إرسال', 'فاتورة', `إرسال الفاتورة رقم ${inv.invNumber} للعميل عبر الواتساب`);
                 showToast('تم تنزيل الفاتورة بصيغة PDF، جاري فتح الواتساب...');
                 let phone = '';
                 if(inv.customerId) { const c = db.customers.find(x => x.id == inv.customerId); if(c && c.phone) phone = c.phone; }
@@ -1535,7 +1548,7 @@
             if(data && data[0]) {
                 db.invoices.unshift({ id: data[0].id, invNumber: data[0].inv_number, date: data[0].date, customerId: data[0].customer_id, customerName: data[0].customer_name, items: data[0].items, subtotal: data[0].subtotal, discountVal: data[0].discount_val, total: data[0].total, status: data[0].status, paidAmount: data[0].paid_amount });
             }
-            logAction('إضافة', 'فاتورة', `إصدار فاتورة جديدة للعميل ${cleanCustName} بقيمة ${t.total.toFixed(2)}`);
+            logAction('إضافة', 'فاتورة', `إصدار فاتورة جديدة رقم ${meta.invNum} للعميل ${cleanCustName} بقيمة ${t.total.toFixed(2)} ريال`);
             hideLoading(); closeModal(); renderInvoices(); showToast('تم إصدار الفاتورة وحفظها بالسحابة');
         }
 
@@ -1553,7 +1566,7 @@
             if(custInvoices.length === 0) { historyHtml = '<tr><td colspan="4" style="text-align:center;">لا توجد طلبات سابقة</td></tr>'; } 
             else {
                 custInvoices.forEach(inv => {
-                    let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : 'var(--danger)');
+                    let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : (inv.status==='ملغاة' ? '#666' : 'var(--danger)'));
                     historyHtml += `<tr class="clickable-row" onclick="closeModal(); viewInvoiceDetails(${inv.id})"><td class="en-numbers" style="text-align:right">${inv.invNumber}</td><td class="en-numbers" style="text-align:right">${inv.date.split(' ')[0]}</td><td class="en-numbers-center">${inv.total.toFixed(2)}</td><td><span style="background:${statusColor}; padding:2px 6px; border-radius:4px; color:#fff; font-size:0.8rem;">${inv.status}</span></td></tr>`;
                 });
             }
@@ -1603,7 +1616,7 @@
                 const c = db.customers.find(x => x.id === id);
                 showLoading('جاري الحذف...'); await supabaseClient.from('thawq_customers').delete().eq('id', id);
                 db.customers = db.customers.filter(x => x.id !== id); 
-                logAction('حذف', 'عميل', `حذف العميل: ${c ? c.name : id}`);
+                logAction('حذف', 'عميل', `قام الموظف بحذف العميل: ${c ? c.name : id}`);
                 hideLoading(); renderCustomers(); closeModal(); showToast('تم الحذف');
             }
         }
@@ -1678,11 +1691,11 @@
                 await supabaseClient.from('thawq_users').update(d).eq('id', id);
                 const idx = db.users.findIndex(x=>x.id==id);
                 if(idx > -1) db.users[idx] = {id, ...d};
-                logAction('تعديل', 'نظام', `تعديل صلاحيات المستخدم: ${userInput}`);
+                logAction('تعديل', 'نظام', `تعديل بيانات/صلاحيات المستخدم: ${userInput}`);
             } else {
                 const {data} = await supabaseClient.from('thawq_users').insert([d]).select();
                 if(data && data[0]) db.users.push({id: data[0].id, ...d});
-                logAction('إضافة', 'نظام', `إنشاء مستخدم جديد: ${userInput}`);
+                logAction('إضافة', 'نظام', `إنشاء حساب موظف جديد: ${userInput}`);
             }
             hideLoading();
             closeModal(); renderUsers();
@@ -1737,6 +1750,7 @@
                 if(verifyUser) {
                     currentUser = verifyUser;
                     sessionStorage.setItem('thawq_session', JSON.stringify(currentUser));
+                    document.getElementById('logged-user-name').innerText = `الكاشير: ${currentUser.name}`;
                     loginSuccess(); 
                     isLoggedIn = true;
                 } else {
