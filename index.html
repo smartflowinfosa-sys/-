@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>الذوق للمناسبات - POS</title>
     
     <!-- PWA Meta Tags -->
@@ -51,16 +51,10 @@
             display: inline-block; 
         }
         .en-numbers-center { 
-            direction: ltr !important; 
-            text-align: center !important; 
-            font-family: 'Arial', sans-serif !important; 
-            unicode-bidi: isolate; 
-            display: inline-block; 
-            width: 100%;
+            direction: ltr !important; text-align: center !important; font-family: 'Arial', sans-serif !important; unicode-bidi: isolate; display: inline-block; width: 100%;
         }
 
-        input[type="number"]::-webkit-inner-spin-button, 
-        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
 
         .btn { padding: 10px 20px; border-radius: 6px; font-weight: bold; display: inline-block; text-align: center; }
@@ -85,17 +79,18 @@
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .card-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 10px;}
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 600px; }
         th, td { padding: 12px; text-align: start; border-bottom: 1px solid var(--border); }
         th { background: rgba(0,0,0,0.05); font-weight: bold; }
         
         .clickable-row { cursor: pointer; transition: background 0.2s; }
         .clickable-row:hover { background: rgba(0,0,0,0.03); }
 
-        /* ================= Layout ================= */
-        #app-view { display: flex; height: 100vh; overflow: hidden; }
-        #sidebar { width: 250px; background: var(--sidebar); display: flex; flex-direction: column; border-inline-end: 1px solid var(--border); }
+        /* ================= Layout & Mobile Navigation ================= */
+        #app-view { display: flex; height: 100vh; overflow: hidden; position: relative; }
         
+        #sidebar { width: 250px; background: var(--sidebar); display: flex; flex-direction: column; border-inline-end: 1px solid var(--border); z-index: 1000; }
         .logo-container { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
         .logo-text { font-size: 1.5rem; font-weight: bold; color: var(--primary); text-align: center; }
 
@@ -103,15 +98,34 @@
         .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-inline-start: 4px solid transparent; }
         .nav-item:hover, .nav-item.active { background: rgba(0,0,0,0.05); border-inline-start-color: var(--primary); color: var(--primary); font-weight: bold; }
         
-        #main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; }
+        #main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; width: 100%; }
         #header { height: 70px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .icon-btn { background: none; font-size: 1.2rem; color: var(--text); cursor: pointer; padding: 5px; margin: 0 2px; border:none; }
-        #content-area { flex: 1; padding: 30px; overflow-y: auto; }
+        #content-area { flex: 1; padding: 30px; overflow-y: auto; overflow-x: hidden; }
+
+        .mobile-menu-btn { display: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; background: none; border: none; margin-inline-end: 15px; }
+        #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+
+        /* ================= Responsive (Mobile) ================= */
+        @media (max-width: 768px) {
+            #sidebar { position: fixed; right: -280px; top: 0; bottom: 0; width: 260px; transition: right 0.3s ease; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
+            #sidebar.active { right: 0; }
+            #sidebar-overlay.active { display: block; }
+            .mobile-menu-btn { display: block; }
+            #header { padding: 0 15px; }
+            #content-area { padding: 15px; }
+            
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .pos-container { grid-template-columns: 1fr; height: auto; display: flex; flex-direction: column-reverse; }
+            .pos-cart { height: 350px; }
+            .pos-products { height: 400px; }
+            .modal { width: 95%; padding: 20px 15px; }
+        }
 
         /* ================= Login Screen ================= */
-        #login-view { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); gap: 15px; }
-        .login-box { background: var(--card); padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 400px; border: 1px solid var(--border); }
+        #login-view { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); gap: 15px; padding: 20px; }
+        .login-box { background: var(--card); padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 400px; border: 1px solid var(--border); }
         .login-box h1 { color: var(--primary); margin-bottom: 30px; font-size: 2rem; }
         .powered-by { display: inline-block; background: rgba(139, 58, 42, 0.08); color: var(--primary); padding: 8px 25px; border-radius: 50px; margin-top: 25px; font-size: 0.9rem; font-weight: bold; border: 1px solid rgba(139, 58, 42, 0.2); letter-spacing: 0.5px; }
         .copyright { font-size: 0.85rem; color: var(--text-muted); text-align: center; }
@@ -120,25 +134,25 @@
         .pos-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 60vh; }
         .pos-products { overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; align-content: start; }
         .pos-item-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; text-align: center; overflow: hidden; transition: transform 0.2s; }
-        .pos-item-card:hover { transform: scale(1.02); border-color: var(--primary); }
+        .pos-item-card:active { transform: scale(0.95); border-color: var(--primary); }
         .pos-item-img { width: 100%; height: 80px; object-fit: cover; background: #eee; }
         .pos-item-info { padding: 10px; font-size: 0.9rem; }
         .pos-cart { background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; }
         .cart-items { flex: 1; overflow-y: auto; border-bottom: 1px solid var(--border); margin-bottom: 10px; padding-bottom: 10px; }
         .cart-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
-        .cart-qty-btn { background: var(--border); border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; }
+        .cart-qty-btn { background: var(--border); border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; }
 
         /* ================= Modals & Overlays ================= */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1100; }
         .modal { background: var(--card); padding: 30px; border-radius: 10px; width: 500px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
         .modal-lg { width: 900px; }
 
         /* Checkbox Styling */
         .checkbox-box { display: flex; align-items: center; gap: 12px; padding: 12px 15px; background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: background 0.2s; }
-        .checkbox-box:hover { background: rgba(0,0,0,0.06); }
         .checkbox-box input[type="checkbox"] { width: 22px !important; height: 22px !important; margin: 0 !important; cursor: pointer; flex-shrink: 0; accent-color: var(--primary); }
         .checkbox-box span { font-size: 1rem; font-weight: 500; color: var(--text); }
         .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        @media (max-width: 768px) { .perm-grid { grid-template-columns: 1fr; } }
 
         /* Cloud Sync Mini Loader */
         #cloud-loader { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #fff; padding: 8px 20px; border-radius: 50px; z-index: 99999; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.95rem; font-weight: bold; pointer-events: none; transition: opacity 0.3s ease; }
@@ -192,7 +206,9 @@
     </div>
 
     <!-- Main App View -->
+    <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
     <div id="app-view" class="hidden">
+        
         <!-- Sidebar -->
         <div id="sidebar">
             <div class="logo-container">
@@ -205,9 +221,12 @@
         <!-- Main Content -->
         <div id="main-content">
             <div id="header">
-                <h2 id="page-title">المبيعات</h2>
+                <div class="flex" style="align-items:center;">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar(true)"><i class="fas fa-bars"></i></button>
+                    <h2 id="page-title">المبيعات</h2>
+                </div>
                 <div class="header-actions">
-                    <span id="logged-user-name" style="font-weight:bold; color:var(--primary); font-size:0.9rem;"></span>
+                    <span id="logged-user-name" style="font-weight:bold; color:var(--primary); font-size:0.9rem; display:none;"></span>
                     <i class="fas fa-user-circle" style="font-size: 2.2rem; color: var(--gold);"></i>
                 </div>
             </div>
@@ -230,7 +249,7 @@
 
                 <!-- Performance -->
                 <div id="sec-performance" class="section hidden">
-                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; align-items:center;">
+                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; align-items:center; flex-wrap:wrap; gap:10px;">
                         <h3 style="color:var(--primary); font-size:1.4rem;">مؤشرات الأداء وتحليل المبيعات</h3>
                         <div class="flex" style="gap:10px; align-items:center;">
                             <label style="margin:0; font-weight:bold;">فلتر الوقت:</label>
@@ -276,69 +295,51 @@
 
                 <!-- Expenses -->
                 <div id="sec-expenses" class="section hidden">
-                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; align-items:center;">
-                        <div class="flex" style="gap:10px;">
-                            <input type="text" id="exp-search" placeholder="بحث في مصروفات اليوم..." class="en-numbers" style="width: 250px; margin:0;" onkeyup="renderExpensesTable()">
-                        </div>
-                        <div class="flex" style="gap:10px;">
-                            <button class="btn btn-outline" onclick="openExpenseReportModal()"><i class="fas fa-file-invoice"></i> تقرير المصروفات</button>
-                            <button class="btn btn-primary" onclick="openExpenseModal()"><i class="fas fa-plus"></i> إضافة مصروف جديد</button>
+                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <input type="text" id="exp-search" placeholder="بحث في مصروفات اليوم..." class="en-numbers" style="width: 250px; margin:0; max-width:100%;" onkeyup="renderExpensesTable()">
+                        <div class="flex" style="gap:10px; flex-wrap:wrap;">
+                            <button class="btn btn-outline" onclick="openExpenseReportModal()"><i class="fas fa-file-invoice"></i> تقرير</button>
+                            <button class="btn btn-primary" onclick="openExpenseModal()"><i class="fas fa-plus"></i> مصروف جديد</button>
                         </div>
                     </div>
                     
                     <div class="card" style="margin-bottom: 25px;">
                         <h3 class="card-header" style="border-bottom:none; margin-bottom:0; color:var(--primary);">مصروفات اليوم</h3>
-                        <table id="expenses-table">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:right">التاريخ</th>
-                                    <th>النوع</th>
-                                    <th>الفئة</th>
-                                    <th style="text-align:center;">المبلغ</th>
-                                    <th>طريقة الدفع</th>
-                                    <th>إجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table id="expenses-table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:right">التاريخ</th>
+                                        <th>النوع</th>
+                                        <th>الفئة</th>
+                                        <th style="text-align:center;">المبلغ</th>
+                                        <th>طريقة الدفع</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="card" style="background: rgba(0,0,0,0.01);">
-                        <div class="flex" style="justify-content: space-between; align-items:flex-start; margin-bottom: 15px;">
+                        <div class="flex" style="justify-content: space-between; align-items:flex-start; margin-bottom: 15px; flex-wrap:wrap; gap:10px;">
                             <h3 style="color:var(--primary); font-size:1.4rem; margin:0;"><i class="fas fa-chart-line" style="margin-left:8px;"></i> لوحة المصروفات</h3>
                             <div class="flex" style="gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-                                <div style="display:flex; align-items:center; gap:5px;">
-                                    <label style="margin:0; font-size:0.9rem;">الرسم البياني:</label>
-                                    <select id="exp-metric-filter" style="width:230px; margin:0; padding:6px;" onchange="renderExpensesDashboard()">
-                                        <option value="total">إجمالي المصروفات</option>
-                                        <option value="fixed_vs_var">مصروفات ثابتة مقابل متغيرة</option>
-                                        <option value="month_vs_month">مقارنة الشهر الحالي بالشهر الماضي</option>
-                                    </select>
-                                </div>
-                                <div style="display:flex; align-items:center; gap:5px;">
-                                    <label style="margin:0; font-size:0.9rem;">المدة:</label>
-                                    <select id="exp-time-filter" style="width:130px; margin:0; padding:6px;" onchange="toggleExpCustomDate()">
-                                        <option value="all">كل الأوقات</option>
-                                        <option value="today">اليوم</option>
-                                        <option value="week">هذا الأسبوع</option>
-                                        <option value="month">هذا الشهر</option>
-                                        <option value="custom">مخصص</option>
-                                    </select>
-                                </div>
+                                <select id="exp-metric-filter" style="width:auto; margin:0; padding:6px;" onchange="renderExpensesDashboard()">
+                                    <option value="total">إجمالي المصروفات</option>
+                                    <option value="fixed_vs_var">مصروفات ثابتة مقابل متغيرة</option>
+                                    <option value="month_vs_month">مقارنة الشهر الحالي بالشهر الماضي</option>
+                                </select>
+                                <select id="exp-time-filter" style="width:auto; margin:0; padding:6px;" onchange="toggleExpCustomDate()">
+                                    <option value="today">اليوم</option>
+                                    <option value="week">هذا الأسبوع</option>
+                                    <option value="month" selected>هذا الشهر</option>
+                                    <option value="all">الكل</option>
+                                </select>
                             </div>
                         </div>
                         
-                        <div id="exp-custom-date-container" class="hidden flex" style="gap:10px; justify-content:flex-end; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:15px;">
-                            <div class="flex" style="align-items:center; gap:5px;">
-                                <label style="margin:0; font-size:0.9rem;">من:</label>
-                                <input type="date" id="exp-date-start" class="en-numbers" style="margin:0; padding:5px; height:auto;" onchange="renderExpensesDashboard()">
-                            </div>
-                            <div class="flex" style="align-items:center; gap:5px;">
-                                <label style="margin:0; font-size:0.9rem;">إلى:</label>
-                                <input type="date" id="exp-date-end" class="en-numbers" style="margin:0; padding:5px; height:auto;" onchange="renderExpensesDashboard()">
-                            </div>
-                        </div>
-
                         <div class="grid grid-3" style="margin-bottom: 20px;">
                             <div class="card stat-card" style="text-align:center; padding:15px;"><div style="font-size:0.9rem;">إجمالي المصروفات</div><h3 id="exp-total-kpi" class="en-numbers-center" style="color:var(--danger); font-size:1.3rem;">0 SAR</h3></div>
                             <div class="card stat-card" style="text-align:center; padding:15px;"><div style="font-size:0.9rem;">مصروفات ثابتة</div><h3 id="exp-fixed-kpi" class="en-numbers-center" style="font-size:1.3rem;">0 SAR</h3></div>
@@ -361,24 +362,24 @@
 
                 <!-- Invoices -->
                 <div id="sec-invoices" class="section hidden">
-                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; align-items:center;">
-                        <div class="flex" style="gap:10px;">
-                            <input type="text" id="inv-search" placeholder="بحث برقم الفاتورة..." class="en-numbers" style="width: 250px; margin:0;" onkeyup="renderInvoices()">
-                        </div>
+                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <input type="text" id="inv-search" placeholder="بحث برقم الفاتورة..." class="en-numbers" style="width: 250px; margin:0; max-width:100%;" onkeyup="renderInvoices()">
                         <button class="btn btn-primary" onclick="openPOSModal()"><i class="fas fa-plus"></i> إنشاء فاتورة (سلة)</button>
                     </div>
                     <div class="card">
-                        <table id="invoices-table">
-                            <thead><tr><th style="text-align:right">رقم الفاتورة</th><th style="text-align:right">التاريخ</th><th>العميل</th><th style="text-align:center;">المجموع</th><th>الحالة</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table id="invoices-table">
+                                <thead><tr><th style="text-align:right">رقم الفاتورة</th><th style="text-align:right">التاريخ</th><th>العميل</th><th style="text-align:center;">المجموع</th><th>الحالة</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Customers -->
                 <div id="sec-customers" class="section hidden">
-                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px;">
-                        <input type="text" id="cust-search" placeholder="بحث عن عميل..." style="width: 300px; margin:0;" onkeyup="renderCustomers()">
+                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+                        <input type="text" id="cust-search" placeholder="بحث عن عميل..." style="width: 300px; margin:0; max-width:100%;" onkeyup="renderCustomers()">
                         <button class="btn btn-primary" onclick="openCustomerModal()"><i class="fas fa-plus"></i> إضافة عميل</button>
                     </div>
                     <div class="grid grid-4" id="customers-grid"></div>
@@ -386,18 +387,20 @@
 
                 <!-- Products -->
                 <div id="sec-products" class="section hidden">
-                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px;">
-                        <select id="prod-cat-filter" style="width: 200px; margin:0;" onchange="renderProducts()"><option value="all">كل الفئات</option></select>
-                        <div style="display:flex; gap:10px;">
-                            <button class="btn btn-outline" onclick="openCategoriesModal()"><i class="fas fa-list"></i> إدارة الفئات</button>
+                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+                        <select id="prod-cat-filter" style="width: 200px; margin:0; max-width:100%;" onchange="renderProducts()"><option value="all">كل الفئات</option></select>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn btn-outline" onclick="openCategoriesModal()"><i class="fas fa-list"></i> الفئات</button>
                             <button class="btn btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> إضافة صنف</button>
                         </div>
                     </div>
                     <div class="card">
-                        <table id="products-table">
-                            <thead><tr><th>صورة</th><th>الاسم</th><th>الفئة</th><th style="text-align:center;">السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table id="products-table">
+                                <thead><tr><th>صورة</th><th>الاسم</th><th>الفئة</th><th style="text-align:center;">السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -408,32 +411,37 @@
                         <button class="btn btn-primary" onclick="openUserModal()"><i class="fas fa-plus"></i> مستخدم جديد</button>
                     </div>
                     <div class="card">
-                        <table id="users-table">
-                            <thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>الحالة</th><th>إجراءات</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table id="users-table">
+                                <thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Audit Logs (محمي بصلاحية) -->
+                <!-- Audit Logs (سجل النشاطات الدقيق) -->
                 <div id="sec-logs" class="section hidden">
                     <div class="flex" style="justify-content: space-between; margin-bottom: 20px;">
                         <h3>سجل نشاطات النظام (Audit Log)</h3>
                         <button class="btn btn-outline" onclick="renderLogs()"><i class="fas fa-sync"></i> تحديث السجل</button>
                     </div>
                     <div class="card">
-                        <table id="logs-table">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:right">التاريخ والوقت</th>
-                                    <th>الموظف</th>
-                                    <th>العملية</th>
-                                    <th>القسم</th>
-                                    <th>التفاصيل</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">يتم هنا تسجيل اسم أي موظف قام بإضافة أو حذف أو تعديل أي فاتورة، عميل، مصروف، أو منتج لضمان الرقابة الكاملة.</p>
+                        <div class="table-responsive">
+                            <table id="logs-table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:right; min-width:120px;">التاريخ والوقت</th>
+                                        <th style="min-width:100px;">الموظف</th>
+                                        <th>العملية</th>
+                                        <th>القسم</th>
+                                        <th style="min-width:250px;">التفاصيل</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -596,6 +604,16 @@
 
                 applyTheme(db.settings.theme);
 
+                // معالجة صلاحية السجل للمدير المخفية سابقاً
+                if(currentUser) {
+                    const isAdmin = currentUser.username.includes('admin') || currentUser.username.includes('smartflow') || (currentUser.permissions && currentUser.permissions['users']);
+                    if(isAdmin) {
+                        if(!currentUser.permissions) currentUser.permissions = {};
+                        currentUser.permissions['logs'] = true; 
+                    }
+                    renderSidebar();
+                }
+
             } catch (error) {
                 console.error("Database connection error:", error);
                 showToast("حدث خطأ أثناء جلب البيانات من السحابة", "error");
@@ -612,7 +630,6 @@
                 details: details
             };
             try {
-                // نرسل السجل للسحابة بصمت دون تعطيل واجهة المستخدم
                 await supabaseClient.from('thawq_logs').insert([logEntry]);
             } catch(e) {
                 console.error("Failed to log action:", e);
@@ -652,6 +669,22 @@
                         <td style="font-size:0.9rem; color:var(--text-muted);">${log.details}</td>
                     </tr>`;
             });
+        }
+
+        // ================= Mobile Sidebar Toggle =================
+        function toggleSidebar(show = null) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (show === true) {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+            } else if (show === false) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            } else {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
         }
 
         function showLoading(msg = 'جاري المزامنة...') { 
@@ -705,7 +738,14 @@
             
             if (user) {
                 currentUser = user;
-                sessionStorage.setItem('thawq_session', JSON.stringify(user));
+                // إعطاء صلاحية السجل للمدير تلقائيا إن لم تكن موجودة
+                const isAdmin = currentUser.username.includes('admin') || currentUser.username.includes('smartflow') || (currentUser.permissions && currentUser.permissions['users']);
+                if(isAdmin) {
+                    if(!currentUser.permissions) currentUser.permissions = {};
+                    currentUser.permissions['logs'] = true; 
+                }
+
+                sessionStorage.setItem('thawq_session', JSON.stringify(currentUser));
                 logAction('دخول', 'نظام', 'تسجيل دخول للنظام'); 
                 loginSuccess();
             } else {
@@ -716,7 +756,8 @@
         function loginSuccess() {
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('app-view').classList.remove('hidden');
-            document.getElementById('logged-user-name').innerText = `الكاشير: ${currentUser.name}`;
+            document.getElementById('logged-user-name').innerText = currentUser.name || currentUser.username;
+            document.getElementById('logged-user-name').style.display = 'inline-block';
             renderSidebar();
         }
 
@@ -727,6 +768,7 @@
             document.getElementById('app-view').classList.add('hidden');
             document.getElementById('login-view').classList.remove('hidden');
             document.getElementById('login-form').reset();
+            document.getElementById('logged-user-name').style.display = 'none';
         }
 
         function renderSidebar() {
@@ -736,7 +778,6 @@
             if(!db.settings.navOrder) db.settings.navOrder = Object.keys(navDict);
 
             db.settings.navOrder.forEach(key => {
-                // يعرض السجل فقط لمن يملك الصلاحية الصريحة (المدير)
                 if(currentUser.permissions[key]) {
                     if(!firstAllowed) firstAllowed = key;
                     navContainer.innerHTML += `<div class="nav-item" data-target="${key}" onclick="navigate('${key}')">
@@ -756,6 +797,11 @@
             document.getElementById('sec-' + id).classList.remove('hidden');
             document.getElementById('page-title').innerText = navDict[id].label;
             
+            // إخفاء القائمة في الجوال بعد الاختيار
+            if(window.innerWidth <= 768) {
+                toggleSidebar(false);
+            }
+
             if(id==='dashboard') renderDashboard();
             if(id==='performance') renderPerformance();
             if(id==='expenses') renderExpenses();
@@ -1179,7 +1225,9 @@
                     <input type="text" id="new-cat-name" placeholder="اسم الفئة الجديدة" style="margin:0;">
                     <button class="btn btn-primary" onclick="addCategory()">إضافة</button>
                 </div>
-                <table><thead><tr><th>الاسم</th><th>إجراء</th></tr></thead><tbody>${rows}</tbody></table>
+                <div class="table-responsive">
+                    <table><thead><tr><th>الاسم</th><th>إجراء</th></tr></thead><tbody>${rows}</tbody></table>
+                </div>
                 <div style="text-align:left; margin-top:15px;"><button class="btn btn-outline" onclick="closeModal(); renderProducts(); loadCatFilter();">إغلاق</button></div>
             `);
         }
@@ -1332,7 +1380,9 @@
                     <span style="background:${statusColor}; padding:4px 10px; border-radius:4px; color:#fff; font-size:0.9rem;">${inv.status}</span>
                 </div>
                 <div class="grid grid-2" style="font-size:0.95rem; margin-bottom:20px;"><div><strong>العميل:</strong> ${inv.customerName}</div><div><strong>التاريخ:</strong> <span class="en-numbers" style="float:left;">${inv.date}</span></div></div>
-                <table style="font-size:0.9rem; margin-bottom:20px; width:100%;"><thead><tr><th style="text-align:right; width:40%;">الصنف</th><th style="text-align:center">الكمية</th><th style="text-align:center">السعر</th><th style="text-align:center">الإجمالي</th></tr></thead><tbody>${itemsHtml}</tbody></table>
+                <div class="table-responsive">
+                    <table style="font-size:0.9rem; margin-bottom:20px; width:100%;"><thead><tr><th style="text-align:right; width:40%;">الصنف</th><th style="text-align:center">الكمية</th><th style="text-align:center">السعر</th><th style="text-align:center">الإجمالي</th></tr></thead><tbody>${itemsHtml}</tbody></table>
+                </div>
                 <div class="card" style="background:rgba(0,0,0,0.02); padding:15px; font-size:0.95rem;">
                     <div class="flex" style="justify-content:space-between;"><span>المجموع الفرعي:</span> <span class="en-numbers">${inv.subtotal.toFixed(2)} SAR</span></div>
                     <div class="flex" style="justify-content:space-between; margin-top:5px;"><span>الخصم:</span> <span class="en-numbers">${inv.discountVal.toFixed(2)} SAR</span></div>
@@ -1341,11 +1391,11 @@
                     <div class="flex" style="justify-content:space-between; font-weight:bold; font-size:1.2rem; color:var(--primary);"><span>الإجمالي:</span> <span class="en-numbers">${inv.total.toFixed(2)} SAR</span></div>
                 </div>
                 <div class="flex" style="justify-content:space-between; margin-top:25px; flex-wrap:wrap; gap:10px;">
-                    <div class="flex" style="gap:10px;">
+                    <div class="flex" style="gap:10px; flex-wrap:wrap;">
                         <button class="btn btn-outline" onclick="printInvoice(${inv.id})"><i class="fas fa-print"></i> طباعة الفاتورة</button>
                         <button class="btn btn-success" onclick="sendInvoiceWA(${inv.id})"><i class="fab fa-whatsapp"></i> إرسال للعميل (PDF)</button>
                     </div>
-                    <div class="flex" style="gap:10px;">
+                    <div class="flex" style="gap:10px; flex-wrap:wrap;">
                         <button class="icon-btn-solid warning" onclick="editInvoiceStatus(${inv.id})" title="تعديل الحالة"><i class="fas fa-edit"></i></button>
                         ${currentUser.permissions['users'] ? `<button class="icon-btn-solid danger" onclick="deleteInvoice(${inv.id})" title="حذف الفاتورة نهائياً"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
@@ -1417,7 +1467,6 @@
             document.getElementById('print-customer').innerText = inv.customerName;
             document.getElementById('print-status').innerText = inv.status;
             
-            // كتابة اسم الكاشير الذي قام بالطباعة
             document.getElementById('print-cashier').innerText = currentUser.name || currentUser.username;
 
             const tbody = document.getElementById('print-items'); tbody.innerHTML = '';
@@ -1481,8 +1530,8 @@
             let catOpts = '<option value="all">كل الفئات</option>'; db.categories.forEach(c => catOpts += `<option value="${c.id}">${c.nameAr}</option>`);
             showModal(`
                 <h3 class="card-header" style="margin-bottom:10px;">سلة المبيعات (POS)</h3>
-                <div style="margin-bottom:15px; display:flex; gap:10px;">
-                    <select id="pos-cust" style="flex:1;">${custOpts}</select>
+                <div style="margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <select id="pos-cust" style="flex:1; min-width:200px;">${custOpts}</select>
                     <select id="pos-cat-filter-modal" style="width:150px; cursor:pointer;" onchange="renderPOSProductsModal()">${catOpts}</select>
                 </div>
                 <div class="pos-container">
@@ -1578,7 +1627,9 @@
                 </div>
                 <div class="grid grid-2" style="font-size:0.95rem; margin-bottom:20px;"><div><strong>الجوال:</strong> <span class="en-numbers" style="float:left;">${c.phone||'-'}</span></div><div><strong>العنوان الأساسي:</strong><br>${c.address1||'-'}</div><div><strong>العنوان الإضافي:</strong><br>${c.address2||'-'}</div><div style="grid-column: 1 / -1;"><strong>ملاحظات:</strong><br><p style="background:rgba(0,0,0,0.02); padding:10px; border-radius:6px; min-height:40px;">${c.notes||'لا توجد ملاحظات'}</p></div></div>
                 <h4 style="color:var(--primary); margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:5px;">سجل الطلبات</h4>
-                <table style="font-size:0.9rem; margin-top:0;"><thead><tr><th style="text-align:right">رقم الفاتورة</th><th style="text-align:right">التاريخ</th><th style="text-align:center">المجموع</th><th style="text-align:right">الحالة</th></tr></thead><tbody>${historyHtml}</tbody></table>
+                <div class="table-responsive">
+                    <table style="font-size:0.9rem; margin-top:0;"><thead><tr><th style="text-align:right">رقم الفاتورة</th><th style="text-align:right">التاريخ</th><th style="text-align:center">المجموع</th><th style="text-align:right">الحالة</th></tr></thead><tbody>${historyHtml}</tbody></table>
+                </div>
             `, 'modal-lg');
         }
 
@@ -1633,11 +1684,11 @@
         function openUserModal(id=null) {
             const u = id ? db.users.find(x=>x.id==id) : {name:'', username:'', pass:'', active:true, permissions:{}};
             
-            const isAdmin = u.username.includes('admin') || u.username.includes('smartflow') || u.permissions['users']; 
+            const isAdmin = u.username.includes('admin') || u.username.includes('smartflow') || (u.permissions && u.permissions['users']); 
             
             let permsHTML = '<div class="perm-grid">';
             Object.keys(navDict).forEach(k => {
-                const checked = (isAdmin || u.permissions[k]) ? 'checked' : '';
+                const checked = (isAdmin || (u.permissions && u.permissions[k])) ? 'checked' : '';
                 const disabled = isAdmin ? 'disabled' : '';
                 permsHTML += `<label class="checkbox-box"><input type="checkbox" id="perm-${k}" ${checked} ${disabled}><span>${navDict[k].label}</span></label>`;
             });
@@ -1749,8 +1800,17 @@
                 
                 if(verifyUser) {
                     currentUser = verifyUser;
+                    
+                    // إعطاء صلاحية السجل للمدير تلقائيا إن لم تكن موجودة
+                    const isAdmin = currentUser.username.includes('admin') || currentUser.username.includes('smartflow') || (currentUser.permissions && currentUser.permissions['users']);
+                    if(isAdmin) {
+                        if(!currentUser.permissions) currentUser.permissions = {};
+                        currentUser.permissions['logs'] = true; 
+                    }
+
                     sessionStorage.setItem('thawq_session', JSON.stringify(currentUser));
-                    document.getElementById('logged-user-name').innerText = `الكاشير: ${currentUser.name}`;
+                    document.getElementById('logged-user-name').innerText = currentUser.name || currentUser.username;
+                    document.getElementById('logged-user-name').style.display = 'inline-block';
                     loginSuccess(); 
                     isLoggedIn = true;
                 } else {
