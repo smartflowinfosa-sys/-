@@ -8,11 +8,8 @@
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8B3A2A">
-    <link rel="apple-touch-icon" href="icon-192.png?v=3">
-    <link rel="apple-touch-icon" sizes="152x152" href="icon-192.png?v=3">
-    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png?v=3">
-    <link rel="apple-touch-icon" sizes="167x167" href="icon-192.png?v=3">
-
+    <link rel="apple-touch-icon" href="icon-192.png?v=4">
+    
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,11 +25,13 @@
             --bg: #FDF8F4; --sidebar: #F0E6DC; --primary: #8B3A2A; --primary-hover: #702e21;
             --text: #333333; --text-muted: #666666; --card: #FFFFFF; --border: #E2D5C8;
             --gold: #D4A574; --danger: #dc3545; --success: #28a745; --warning: #f39c12;
+            --syslog-bg: #f8f9fa;
         }
         :root[data-theme="medium"] {
             --bg: #4A2419; --sidebar: #6B3020; --primary: #D4A574; --primary-hover: #c49666;
             --text: #FDF0E8; --text-muted: #E2D5C8; --card: #5A2A1E; --border: #7A3B28;
             --gold: #F0D0A0; --danger: #ff6b6b; --success: #51cf66; --warning: #f1c40f;
+            --syslog-bg: #3a1c13;
         }
 
         /* ================= Global Styles ================= */
@@ -43,12 +42,8 @@
         button { cursor: pointer; border: none; outline: none; font-family: inherit; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); margin-bottom: 10px; }
         
-        .en-numbers, input[type="number"], input[type="date"], input[type="email"], input[type="password"] { 
-            direction: ltr !important; text-align: left; font-family: 'Arial', sans-serif !important; unicode-bidi: isolate; display: inline-block; 
-        }
-        .en-numbers-center { 
-            direction: ltr !important; text-align: center !important; font-family: 'Arial', sans-serif !important; unicode-bidi: isolate; display: inline-block; width: 100%;
-        }
+        .en-numbers, input[type="number"], input[type="date"], input[type="email"], input[type="password"] { direction: ltr !important; text-align: left; font-family: 'Arial', sans-serif !important; unicode-bidi: isolate; display: inline-block; }
+        .en-numbers-center { direction: ltr !important; text-align: center !important; font-family: 'Arial', sans-serif !important; unicode-bidi: isolate; display: inline-block; width: 100%; }
 
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
@@ -64,6 +59,7 @@
         .icon-btn-solid { width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; border: none; cursor: pointer; font-size: 1.1rem; }
         .icon-btn-solid.warning { background: var(--warning); }
         .icon-btn-solid.danger { background: var(--danger); }
+        .icon-btn-solid.info { background: #17a2b8; }
 
         .hidden { display: none !important; }
         .flex { display: flex; }
@@ -83,31 +79,34 @@
         .clickable-row { cursor: pointer; transition: background 0.2s; }
         .clickable-row:hover { background: rgba(0,0,0,0.03); }
 
+        .created-by-badge { font-size: 0.8rem; background: rgba(139, 58, 42, 0.1); color: var(--primary); padding: 3px 8px; border-radius: 20px; display: inline-block; white-space: nowrap; font-weight: bold;}
+
         /* ================= Layout & Mobile Navigation ================= */
         #app-view { display: flex; height: 100vh; overflow: hidden; position: relative; }
         
-        #sidebar { width: 250px; background: var(--sidebar); display: flex; flex-direction: column; border-inline-end: 1px solid var(--border); z-index: 1000; }
-        .logo-container { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
+        #sidebar { width: 260px; background: var(--sidebar); display: flex; flex-direction: column; border-inline-end: 1px solid var(--border); z-index: 9999; }
+        .logo-container { padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); position: relative; }
         .logo-text { font-size: 1.5rem; font-weight: bold; color: var(--primary); text-align: center; }
+        
+        /* Mobile Back Button in Sidebar */
+        .sidebar-close-btn { display: none; position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; }
 
         .nav-items { flex: 1; padding: 20px 0; overflow-y: auto; }
-        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-inline-start: 4px solid transparent; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-inline-start: 4px solid transparent; font-size: 1.05rem; }
         .nav-item:hover, .nav-item.active { background: rgba(0,0,0,0.05); border-inline-start-color: var(--primary); color: var(--primary); font-weight: bold; }
         
         #main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; width: 100%; }
-        #header { height: 70px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
+        #header { height: 70px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; flex-shrink: 0; }
         .header-actions { display: flex; gap: 15px; align-items: center; }
-        .icon-btn { background: none; font-size: 1.2rem; color: var(--text); cursor: pointer; padding: 5px; margin: 0 2px; border:none; }
         #content-area { flex: 1; padding: 20px; overflow-y: auto; overflow-x: hidden; }
 
         .mobile-menu-btn { display: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; background: none; border: none; margin-inline-end: 15px; }
-        #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
 
-        /* ================= Responsive (Mobile) ================= */
+        /* ================= Responsive (Mobile Full Screen Sidebar) ================= */
         @media (max-width: 768px) {
-            #sidebar { position: fixed; right: -280px; top: 0; bottom: 0; width: 260px; transition: right 0.3s ease; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
+            #sidebar { position: fixed; right: -100%; top: 0; bottom: 0; width: 100vw; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: none; }
             #sidebar.active { right: 0; }
-            #sidebar-overlay.active { display: block; }
+            .sidebar-close-btn { display: block; } /* Show back arrow on mobile */
             .mobile-menu-btn { display: block; }
             #header { padding: 0 15px; }
             #content-area { padding: 10px; }
@@ -175,6 +174,19 @@
         #print-view.active-print, #expense-print-view.active-print { display: block; }
         .invoice-print-header { border-bottom: 2px dashed #000; padding-bottom: 20px; margin-bottom: 20px; }
         .invoice-print-table th, .invoice-print-table td { border: 1px solid #000; padding: 8px; }
+
+        /* Syslogs Custom Styling */
+        .syslog-row { border-bottom: 1px solid var(--border); padding: 12px 15px; display: flex; flex-direction: column; gap: 8px; background: var(--card); }
+        .syslog-row:nth-child(even) { background: var(--syslog-bg); }
+        .syslog-header { display: flex; justify-content: space-between; align-items: center; }
+        .syslog-time { font-size: 0.85rem; color: var(--text-muted); }
+        .syslog-user { font-weight: bold; color: var(--primary); font-size: 0.95rem; }
+        .syslog-action { font-size: 0.85rem; padding: 2px 8px; border-radius: 4px; color: #fff; display: inline-block; font-weight:bold; }
+        .syslog-action.إضافة { background: var(--success); }
+        .syslog-action.تعديل { background: var(--warning); }
+        .syslog-action.حذف, .syslog-action.إلغاء { background: var(--danger); }
+        .syslog-action.دخول { background: #17a2b8; }
+        .syslog-details { font-size: 0.95rem; line-height: 1.4; color: var(--text); padding-right: 5px; border-right: 2px solid var(--border); margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -200,12 +212,13 @@
     </div>
 
     <!-- Main App View -->
-    <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
     <div id="app-view" class="hidden">
         
         <!-- Sidebar -->
         <div id="sidebar">
             <div class="logo-container">
+                <!-- Mobile Back Button inside Sidebar -->
+                <button class="sidebar-close-btn" onclick="toggleSidebar(false)"><i class="fas fa-arrow-right"></i></button>
                 <div class="logo-text">الذوق للمناسبات</div>
             </div>
             <div class="nav-items" id="sidebar-nav"></div>
@@ -304,8 +317,7 @@
                                 <thead>
                                     <tr>
                                         <th style="text-align:right">التاريخ</th>
-                                        <th>النوع</th>
-                                        <th>الفئة</th>
+                                        <th>النوع / الفئة</th>
                                         <th style="text-align:center;">المبلغ</th>
                                         <th>بواسطة</th>
                                         <th>إجراءات</th>
@@ -357,16 +369,24 @@
                     </div>
                 </div>
 
+                <!-- Stock -->
+                <div id="sec-stock" class="section hidden">
+                    <div class="card">
+                        <h3 class="card-header">إدارة المخزون</h3>
+                        <p style="color:var(--text-muted);">هذه الشاشة تحت التطوير والإعداد.</p>
+                    </div>
+                </div>
+
                 <!-- Invoices -->
                 <div id="sec-invoices" class="section hidden">
                     <div class="flex" style="justify-content: space-between; margin-bottom: 20px; align-items:center; flex-wrap:wrap; gap:10px;">
-                        <input type="text" id="inv-search" placeholder="بحث برقم الفاتورة..." class="en-numbers" style="width: 250px; margin:0; max-width:100%;" onkeyup="renderInvoices()">
+                        <input type="text" id="inv-search" placeholder="بحث برقم الفاتورة أو العميل..." class="en-numbers" style="width: 250px; margin:0; max-width:100%;" onkeyup="renderInvoices()">
                         <button class="btn btn-primary" onclick="openPOSModal()"><i class="fas fa-plus"></i> إنشاء فاتورة (سلة)</button>
                     </div>
-                    <div class="card">
+                    <div class="card" style="padding: 10px;">
                         <div class="table-responsive">
-                            <table id="invoices-table">
-                                <thead><tr><th style="text-align:right">رقم الفاتورة</th><th style="text-align:right">التاريخ</th><th>العميل</th><th style="text-align:center;">المجموع</th><th>الحالة</th><th>الموظف</th></tr></thead>
+                            <table id="invoices-table" style="margin-top:0;">
+                                <thead><tr><th style="text-align:right">رقم الفاتورة</th><th style="text-align:right">التاريخ</th><th>العميل</th><th style="text-align:center;">المجموع</th><th>الحالة</th><th>بواسطة</th></tr></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -391,10 +411,10 @@
                             <button class="btn btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> إضافة صنف</button>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="card" style="padding:10px;">
                         <div class="table-responsive">
-                            <table id="products-table">
-                                <thead><tr><th>صورة</th><th>الاسم</th><th>الفئة</th><th style="text-align:center;">السعر</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th></tr></thead>
+                            <table id="products-table" style="margin-top:0;">
+                                <thead><tr><th>صورة</th><th>الاسم / الفئة</th><th style="text-align:center;">السعر</th><th>الحالة</th><th>بواسطة</th><th>إجراءات</th></tr></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -407,9 +427,9 @@
                         <h3>إدارة المستخدمين والصلاحيات</h3>
                         <button class="btn btn-primary" onclick="openUserModal()"><i class="fas fa-plus"></i> مستخدم جديد</button>
                     </div>
-                    <div class="card">
+                    <div class="card" style="padding:10px;">
                         <div class="table-responsive">
-                            <table id="users-table">
+                            <table id="users-table" style="margin-top:0;">
                                 <thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>الحالة</th><th>إجراءات</th></tr></thead>
                                 <tbody></tbody>
                             </table>
@@ -417,27 +437,26 @@
                     </div>
                 </div>
 
-                <!-- Audit Logs (سجل النشاطات) -->
-                <div id="sec-logs" class="section hidden">
-                    <div class="flex" style="justify-content: space-between; margin-bottom: 20px;">
-                        <h3>سجل نشاطات النظام (Audit Log)</h3>
-                        <button class="btn btn-outline" onclick="renderLogs()"><i class="fas fa-sync"></i> تحديث السجل</button>
+                <!-- Syslogs (سجل النظام) -->
+                <div id="sec-syslogs" class="section hidden">
+                    <div class="flex" style="justify-content: space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <h3 style="color:var(--primary);"><i class="fas fa-shield-halved"></i> سجل النظام الشامل (Syslogs)</h3>
+                            <p style="font-size:0.9rem; color:var(--text-muted); margin-top:5px;">هذا القسم مخصص لمدير النظام فقط لمراقبة كافة الحركات.</p>
+                        </div>
+                        <div class="flex" style="gap:10px; align-items:center;">
+                            <select id="syslog-time-filter" style="width:150px; margin:0;" onchange="renderSyslogs()">
+                                <option value="today">نشاطات اليوم</option>
+                                <option value="week">هذا الأسبوع</option>
+                                <option value="month">هذا الشهر</option>
+                                <option value="all">كل السجلات</option>
+                            </select>
+                            <button class="icon-btn-solid info" onclick="fetchAndRenderSyslogs()" title="تحديث السجل"><i class="fas fa-sync"></i></button>
+                        </div>
                     </div>
-                    <div class="card">
-                        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">يتم هنا تسجيل اسم أي موظف قام بإضافة أو حذف أو تعديل أي فاتورة، عميل، مصروف، أو منتج لضمان الرقابة الكاملة.</p>
-                        <div class="table-responsive">
-                            <table id="logs-table">
-                                <thead>
-                                    <tr>
-                                        <th style="text-align:right; min-width:120px;">التاريخ والوقت</th>
-                                        <th style="min-width:100px;">الموظف</th>
-                                        <th>العملية</th>
-                                        <th>القسم</th>
-                                        <th style="min-width:250px;">التفاصيل</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
+                    <div class="card" style="padding: 0; overflow:hidden;">
+                        <div id="syslogs-container" style="max-height: 600px; overflow-y: auto;">
+                            <!-- السجلات تظهر هنا -->
                         </div>
                     </div>
                 </div>
@@ -499,7 +518,7 @@
         </div>
         <div style="margin-top: 40px; text-align: center;" dir="rtl">
             <p id="print-thanks">شكرا لاختياركم متجر الذوق للمناسبات</p>
-            <p style="font-size:0.9rem; margin-top:10px; color:var(--text-muted);">الكاشير: <strong id="print-cashier"></strong></p>
+            <p style="font-size:0.9rem; margin-top:10px; color:var(--text-muted);">بواسطة: <strong id="print-cashier"></strong></p>
         </div>
     </div>
 
@@ -538,7 +557,7 @@
         const supabaseKey = 'sb_publishable_IeENdRtg7xeYgD_zvXCrlw_UZXIxVRo';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        let db = { users: [], products: [], categories: [], invoices: [], customers: [], expenses: [], logs: [], settings: {} };
+        let db = { users: [], products: [], categories: [], invoices: [], customers: [], expenses: [], syslogs: [], settings: {} };
         let currentUser = null;
         let charts = {};
         
@@ -551,36 +570,31 @@
             'stock': { icon: 'fa-boxes', label: 'إدارة المخزون' },
             'expenses': { icon: 'fa-money-bill-wave', label: 'المصروفات' },
             'users': { icon: 'fa-user-shield', label: 'المستخدمين' },
-            'logs': { icon: 'fa-history', label: 'سجل النشاطات' },
+            'syslogs': { icon: 'fa-shield-halved', label: 'سجل النظام (Syslogs)' },
             'settings': { icon: 'fa-cog', label: 'الإعدادات' }
         };
 
         async function initDB() {
             try {
-                const [setRes, usersRes, catsRes, prodsRes, custsRes, invsRes, expRes, logsRes] = await Promise.all([
+                const [setRes, usersRes, catsRes, prodsRes, custsRes, invsRes, expRes] = await Promise.all([
                     supabaseClient.from('thawq_settings').select('*').eq('id', 1).single(),
                     supabaseClient.from('thawq_users').select('*'),
                     supabaseClient.from('thawq_categories').select('*'),
                     supabaseClient.from('thawq_products').select('*'),
                     supabaseClient.from('thawq_customers').select('*'),
                     supabaseClient.from('thawq_invoices').select('*').order('id', { ascending: false }),
-                    supabaseClient.from('thawq_expenses').select('*').order('id', { ascending: false }),
-                    supabaseClient.from('thawq_logs').select('*').order('created_at', { ascending: false }).limit(1000)
+                    supabaseClient.from('thawq_expenses').select('*').order('id', { ascending: false })
                 ]);
 
                 if(setRes.data) {
                     db.settings = {
-                        storeName: setRes.data.store_name || 'الذوق للمناسبات',
-                        phone: setRes.data.phone || '',
-                        vatNumber: setRes.data.vat_number || '',
-                        theme: setRes.data.theme || 'light',
-                        navOrder: setRes.data.nav_order || Object.keys(navDict),
-                        breakEvenTarget: setRes.data.break_even_target || 750,
-                        logo: setRes.data.logo || ''
+                        storeName: setRes.data.store_name || 'الذوق للمناسبات', phone: setRes.data.phone || '', vatNumber: setRes.data.vat_number || '', theme: setRes.data.theme || 'light', navOrder: setRes.data.nav_order || Object.keys(navDict), breakEvenTarget: setRes.data.break_even_target || 750, logo: setRes.data.logo || ''
                     };
                     // إجبار ظهور زر السجل في القائمة إن لم يكن محفوظاً مسبقاً
-                    if(db.settings.navOrder && !db.settings.navOrder.includes('logs')) {
-                        db.settings.navOrder.push('logs');
+                    if(db.settings.navOrder && !db.settings.navOrder.includes('syslogs')) {
+                        const logsIndex = db.settings.navOrder.indexOf('logs');
+                        if (logsIndex > -1) db.settings.navOrder.splice(logsIndex, 1);
+                        db.settings.navOrder.push('syslogs');
                     }
                 } else {
                     db.settings = { storeName: 'الذوق للمناسبات', phone: '', vatNumber: '', theme: 'light', navOrder: Object.keys(navDict), breakEvenTarget: 750, logo: '' };
@@ -588,68 +602,92 @@
 
                 if(usersRes.data) db.users = usersRes.data;
                 if(catsRes.data) db.categories = catsRes.data.map(c => ({ id: c.id, nameAr: c.name_ar }));
-                if(prodsRes.data) db.products = prodsRes.data.map(p => ({ id: p.id, nameAr: p.name_ar, catId: p.cat_id, price: p.price, active: p.active, image: p.image }));
-                if(custsRes.data) db.customers = custsRes.data.map(c => ({ id: c.id, name: c.name, phone: c.phone, address1: c.address1, address2: c.address2, notes: c.notes }));
-                if(invsRes.data) db.invoices = invsRes.data.map(i => ({ id: i.id, invNumber: i.inv_number, date: i.date, customerId: i.customer_id, customerName: i.customer_name, items: i.items, subtotal: i.subtotal, discountVal: i.discount_val, total: i.total, status: i.status, paidAmount: i.paid_amount }));
-                if(expRes.data) db.expenses = expRes.data.map(e => ({ id: e.id, date: e.date, type: e.type, category: e.category, customCategory: e.custom_category, amount: e.amount, method: e.method, notes: e.notes, image: e.image }));
+                if(prodsRes.data) db.products = prodsRes.data.map(p => ({ id: p.id, nameAr: p.name_ar, catId: p.cat_id, price: p.price, active: p.active, image: p.image, createdBy: p.created_by || 'غير محدد' }));
+                if(custsRes.data) db.customers = custsRes.data.map(c => ({ id: c.id, name: c.name, phone: c.phone, address1: c.address1, address2: c.address2, notes: c.notes, createdBy: c.created_by || 'غير محدد' }));
+                if(invsRes.data) db.invoices = invsRes.data.map(i => ({ id: i.id, invNumber: i.inv_number, date: i.date, customerId: i.customer_id, customerName: i.customer_name, items: i.items, subtotal: i.subtotal, discountVal: i.discount_val, total: i.total, status: i.status, paidAmount: i.paid_amount, createdBy: i.created_by || 'غير محدد' }));
+                if(expRes.data) db.expenses = expRes.data.map(e => ({ id: e.id, date: e.date, type: e.type, category: e.category, customCategory: e.custom_category, amount: e.amount, method: e.method, notes: e.notes, image: e.image, createdBy: e.created_by || 'غير محدد' }));
                 
-                if(logsRes && logsRes.data) db.logs = logsRes.data; else db.logs = [];
-
                 applyTheme(db.settings.theme);
 
-                // منح الصلاحية للمدير بشكل إجباري لتجنب اختفاء السجل
                 if(currentUser) {
                     const isAdmin = currentUser.username.includes('admin') || currentUser.username.includes('smartflow') || (currentUser.permissions && currentUser.permissions['users']);
                     if(isAdmin) {
                         if(!currentUser.permissions) currentUser.permissions = {};
-                        currentUser.permissions['logs'] = true; 
+                        currentUser.permissions['syslogs'] = true; 
                     }
                     renderSidebar();
                 }
 
             } catch (error) {
-                console.error("Database connection error:", error);
-                showToast("حدث خطأ أثناء جلب البيانات من السحابة", "error");
+                console.error("Database error:", error); showToast("تأكد من تطبيق الخطوة رقم 1 في قاعدة البيانات لتحديث الجداول", "error");
             }
         }
 
-        // ================= Audit Log Function =================
+        // ================= Audit Log Function (Syslogs) =================
         async function logAction(actionType, entity, details) {
             if(!currentUser) return;
-            const logEntry = {
-                user_name: currentUser.name || currentUser.username,
-                action_type: actionType,
-                entity: entity,
-                details: details
-            };
+            const logEntry = { user_name: currentUser.name || currentUser.username, action_type: actionType, entity: entity, details: details };
             try {
                 const { data } = await supabaseClient.from('thawq_logs').insert([logEntry]).select();
-                if(data && data[0]) db.logs.unshift(data[0]); // إضافته للذاكرة فوراً لكي يظهر بالجداول
+                if(data && data[0]) db.syslogs.unshift(data[0]); 
             } catch(e) { console.error(e); }
         }
 
-        async function renderLogs() {
-            const tbody = document.querySelector('#logs-table tbody'); tbody.innerHTML = '';
-            if(!db.logs || db.logs.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد سجلات بعد</td></tr>'; return; }
-            db.logs.forEach(log => {
+        async function fetchAndRenderSyslogs() {
+            showLoading('جلب السجلات...');
+            const { data, error } = await supabaseClient.from('thawq_logs').select('*').order('created_at', { ascending: false }).limit(500);
+            hideLoading();
+            if(error) return showToast('تعذر جلب السجلات', 'error');
+            db.syslogs = data || [];
+            renderSyslogs();
+        }
+
+        function renderSyslogs() {
+            const container = document.getElementById('syslogs-container'); container.innerHTML = '';
+            if(!db.syslogs || db.syslogs.length === 0) { container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted);">لا توجد سجلات بعد</div>'; return; }
+            
+            const filter = document.getElementById('syslog-time-filter').value;
+            const now = new Date();
+            
+            let filteredLogs = db.syslogs.filter(log => {
+                if(filter === 'all') return true;
+                const logDate = new Date(log.created_at);
+                if(filter === 'today') return logDate.toDateString() === now.toDateString();
+                if(filter === 'week') { const diffTime = Math.abs(now - logDate); return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) <= 7; }
+                if(filter === 'month') return logDate.getMonth() === now.getMonth() && logDate.getFullYear() === now.getFullYear();
+                return true;
+            });
+
+            if(filteredLogs.length === 0) { container.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted);">لا توجد سجلات لهذه الفترة</div>'; return; }
+
+            filteredLogs.forEach(log => {
                 const dateObj = new Date(log.created_at);
-                const dateStr = dateObj.toLocaleDateString('en-GB') + ' ' + dateObj.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
-                let actionColor = '#333';
-                if(log.action_type === 'إضافة') actionColor = 'var(--success)';
-                if(log.action_type === 'تعديل') actionColor = 'var(--warning)';
-                if(log.action_type === 'حذف' || log.action_type === 'إلغاء') actionColor = 'var(--danger)';
-                if(log.action_type === 'دخول') actionColor = 'var(--primary)';
-                tbody.innerHTML += `<tr><td class="en-numbers" style="text-align:right; font-size:0.85rem;">${dateStr}</td><td style="font-weight:bold;">${log.user_name}</td><td><span style="color:${actionColor}; font-weight:bold;">${log.action_type}</span></td><td>${log.entity}</td><td style="font-size:0.9rem; color:var(--text-muted);">${log.details}</td></tr>`;
+                const timeStr = dateObj.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+                const dateStr = dateObj.toLocaleDateString('en-GB');
+                
+                let aClass = log.action_type; // 'إضافة', 'تعديل', 'حذف', 'إلغاء', 'دخول'
+                
+                container.innerHTML += `
+                    <div class="syslog-row">
+                        <div class="syslog-header">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span class="syslog-action ${aClass}">${aClass}</span>
+                                <span class="syslog-user"><i class="fas fa-user-circle"></i> ${log.user_name}</span>
+                                <span style="font-size:0.8rem; color:var(--text-muted);">(${log.entity})</span>
+                            </div>
+                            <span class="syslog-time en-numbers">${dateStr} - ${timeStr}</span>
+                        </div>
+                        <div class="syslog-details">${log.details}</div>
+                    </div>`;
             });
         }
 
         // ================= Mobile Sidebar Toggle =================
         function toggleSidebar(show = null) {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (show === true) { sidebar.classList.add('active'); overlay.classList.add('active'); } 
-            else if (show === false) { sidebar.classList.remove('active'); overlay.classList.remove('active'); } 
-            else { sidebar.classList.toggle('active'); overlay.classList.toggle('active'); }
+            if (show === true) { sidebar.classList.add('active'); } 
+            else if (show === false) { sidebar.classList.remove('active'); } 
+            else { sidebar.classList.toggle('active'); }
         }
 
         function showLoading(msg = 'جاري المزامنة...') { document.getElementById('loader-text').innerText = msg; document.getElementById('cloud-loader').classList.remove('hidden'); }
@@ -678,7 +716,7 @@
             if (user) {
                 currentUser = user;
                 const isAdmin = currentUser.username.includes('admin') || currentUser.username.includes('smartflow') || (currentUser.permissions && currentUser.permissions['users']);
-                if(isAdmin) { if(!currentUser.permissions) currentUser.permissions = {}; currentUser.permissions['logs'] = true; }
+                if(isAdmin) { if(!currentUser.permissions) currentUser.permissions = {}; currentUser.permissions['syslogs'] = true; }
                 sessionStorage.setItem('thawq_session', JSON.stringify(currentUser));
                 logAction('دخول', 'نظام', 'تسجيل دخول للنظام'); 
                 loginSuccess();
@@ -715,11 +753,12 @@
             document.querySelectorAll('.section').forEach(s => s.classList.add('hidden')); document.getElementById('sec-' + id).classList.remove('hidden');
             document.getElementById('page-title').innerText = navDict[id].label;
             
-            if(window.innerWidth <= 768) toggleSidebar(false); // إخفاء القائمة في الجوال بعد الضغط
+            // إخفاء القائمة في الجوال بعد الاختيار بلمسة سحرية
+            if(window.innerWidth <= 768) toggleSidebar(false);
 
             if(id==='dashboard') renderDashboard(); if(id==='performance') renderPerformance(); if(id==='expenses') renderExpenses();
             if(id==='invoices') renderInvoices(); if(id==='customers') renderCustomers(); if(id==='products') { renderProducts(); loadCatFilter(); }
-            if(id==='users') renderUsers(); if(id==='logs') renderLogs(); if(id==='settings') loadSettingsUI();
+            if(id==='users') renderUsers(); if(id==='syslogs') fetchAndRenderSyslogs(); if(id==='settings') loadSettingsUI();
         }
 
         // ================= Dashboard =================
@@ -769,12 +808,7 @@
             else if (timeFilter === 'custom') { const startVal = document.getElementById('exp-date-start').value; const endVal = document.getElementById('exp-date-end').value; if(startVal) startDate = new Date(startVal); if(endVal) endDate = new Date(endVal + "T23:59:59"); }
 
             let filteredExp = db.expenses.filter(e => { if (timeFilter === 'all') return true; const edate = new Date(e.date); return (!startDate || edate >= startDate) && (!endDate || edate <= endDate); });
-            let prevMonthTotal = 0, currMonthTotal = 0;
-            if (metricFilter === 'month_vs_month') {
-                const currM = new Date().getMonth(); const currY = new Date().getFullYear(); let prevM = currM - 1; let prevY = currY; if (prevM < 0) { prevM = 11; prevY--; }
-                db.expenses.forEach(e => { const edate = new Date(e.date); if(isNaN(edate)) return; if (edate.getMonth() === currM && edate.getFullYear() === currY) currMonthTotal += parseFloat(e.amount); if (edate.getMonth() === prevM && edate.getFullYear() === prevY) prevMonthTotal += parseFloat(e.amount); });
-            }
-
+            
             let total = 0, fixed = 0, variable = 0;
             filteredExp.forEach(e => { const amt = parseFloat(e.amount); total += amt; if(e.type === 'ثابت') fixed += amt; if(e.type === 'متغير') variable += amt; });
             document.getElementById('exp-total-kpi').innerText = total.toFixed(2) + ' SAR'; document.getElementById('exp-fixed-kpi').innerText = fixed.toFixed(2) + ' SAR'; document.getElementById('exp-var-kpi').innerText = variable.toFixed(2) + ' SAR';
@@ -782,7 +816,6 @@
             let labels = [], data = [], colors = [];
             if (metricFilter === 'total') { let catTotals = {}; filteredExp.forEach(e => { let cat = e.category === 'أخرى' ? (e.customCategory || 'أخرى') : e.category; if(!catTotals[cat]) catTotals[cat] = 0; catTotals[cat] += parseFloat(e.amount); }); labels = Object.keys(catTotals).length ? Object.keys(catTotals) : ['لا يوجد']; data = Object.keys(catTotals).length ? Object.values(catTotals) : [1]; colors = ['#8B3A2A', '#D4A574', '#E2D5C8', '#f39c12', '#28a745', '#333333']; } 
             else if (metricFilter === 'fixed_vs_var') { labels = ['ثابتة', 'متغيرة', 'أصول']; let asset = total - fixed - variable; if(total===0) { data=[1]; labels=['لا يوجد']; colors=['#EEEEEE']; } else { data = [fixed, variable, asset]; colors = ['#8B3A2A', '#D4A574', '#333333']; } }
-            else if (metricFilter === 'month_vs_month') { labels = ['الشهر الحالي', 'الماضي']; if(currMonthTotal===0 && prevMonthTotal===0) { data=[1]; labels=['لا يوجد']; colors=['#EEEEEE']; } else { data = [currMonthTotal, prevMonthTotal]; colors = ['#8B3A2A', '#E2D5C8']; } }
 
             if(charts.expensePie) charts.expensePie.destroy(); charts.expensePie = new Chart(document.getElementById('expensePieChart').getContext('2d'), { type: 'pie', data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth:0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', rtl: true } } } });
         }
@@ -792,29 +825,16 @@
             const search = (document.getElementById('exp-search').value || '').toLowerCase(); const todayStr = new Date().toISOString().split('T')[0];
             db.expenses.filter(e => e.date === todayStr && ((e.category && e.category.toLowerCase().includes(search)) || (e.customCategory && e.customCategory.toLowerCase().includes(search)) || (e.notes && e.notes.toLowerCase().includes(search)))).forEach(exp => {
                 let catDisplay = exp.category === 'أخرى' ? (exp.customCategory || 'أخرى') : exp.category;
-                
-                // جلب اسم الموظف من السجل
-                let log = db.logs.find(l => l.entity === 'مصروف' && l.action_type === 'إضافة' && l.details.includes(exp.amount.toString()));
-                let creator = log ? log.user_name : '-';
-
-                tbody.innerHTML += `<tr><td class="en-numbers" style="text-align:right">${exp.date}</td><td>${exp.type}</td><td>${catDisplay}</td><td class="en-numbers-center">${parseFloat(exp.amount).toFixed(2)}</td>
-                    <td style="font-size:0.85rem; color:var(--text-muted);"><i class="fas fa-user-circle"></i> ${creator}</td>
+                tbody.innerHTML += `<tr><td class="en-numbers" style="text-align:right">${exp.date}</td><td><div style="font-weight:bold;">${catDisplay}</div><div style="font-size:0.8rem; color:var(--text-muted);">${exp.type}</div></td><td class="en-numbers-center">${parseFloat(exp.amount).toFixed(2)}</td>
+                    <td><span class="created-by-badge"><i class="fas fa-user"></i> ${exp.createdBy}</span></td>
                     <td><button class="icon-btn-solid warning" style="display:inline-flex;" onclick="openExpenseModal(${exp.id})"><i class="fas fa-edit"></i></button><button class="icon-btn-solid danger" style="display:inline-flex; margin-right:5px;" onclick="deleteExpense(${exp.id})"><i class="fas fa-trash"></i></button></td></tr>`;
             });
-            if(tbody.innerHTML === '') tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد مصروفات مسجلة لليوم.</td></tr>';
+            if(tbody.innerHTML === '') tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد مصروفات مسجلة لليوم.</td></tr>';
         }
 
         function openExpenseModal(id = null) {
             const e = id ? db.expenses.find(x => x.id === id) : { date: new Date().toISOString().split('T')[0], type:'متغير', category:'مشتريات', customCategory:'', amount:'', method:'كاش', notes:'', image:'' };
-            showModal(`
-                <h3 class="card-header">${id ? 'تعديل المصروف' : 'إضافة مصروف جديد'}</h3>
-                <div class="grid grid-2">
-                    <div><label>التاريخ</label><input type="date" id="exp-date" value="${e.date}" class="en-numbers" style="text-align:right;" required><label>نوع المصروف</label><select id="exp-type"><option value="ثابت" ${e.type==='ثابت'?'selected':''}>ثابت</option><option value="متغير" ${e.type==='متغير'?'selected':''}>متغير</option><option value="أصل" ${e.type==='أصل'?'selected':''}>أصل</option></select><label>الفئة</label><select id="exp-cat" onchange="toggleExpCustomCat(this.value)"><option value="إيجار" ${e.category==='إيجار'?'selected':''}>إيجار</option><option value="بنزين" ${e.category==='بنزين'?'selected':''}>بنزين</option><option value="رواتب" ${e.category==='رواتب'?'selected':''}>رواتب</option><option value="مشتريات" ${e.category==='مشتريات'?'selected':''}>مشتريات</option><option value="أخرى" ${e.category==='أخرى'?'selected':''}>أخرى</option></select><input type="text" id="exp-custom-cat" placeholder="اكتب الفئة هنا..." value="${e.customCategory}" style="display:${e.category==='أخرى'?'block':'none'}; margin-top:-5px;"></div>
-                    <div><label>المبلغ</label><input type="number" id="exp-amount" class="en-numbers" value="${e.amount}" required><label>طريقة الدفع</label><select id="exp-method"><option value="كاش" ${e.method==='كاش'?'selected':''}>كاش</option><option value="تحويل" ${e.method==='تحويل'?'selected':''}>تحويل</option><option value="بطاقة" ${e.method==='بطاقة'?'selected':''}>بطاقة</option></select><label>صورة الفاتورة</label><input type="file" accept="image/*" onchange="encodeExpImg(this)" style="padding:5px;"><img id="exp-img-preview" src="${e.image||''}" style="width:80px; height:80px; object-fit:cover; margin-top:5px; border-radius:6px; display:${e.image?'block':'none'}; cursor:pointer;" onclick="if(this.src) window.open(this.src, '_blank');"><input type="hidden" id="exp-img-b64" value="${e.image||''}"></div>
-                </div>
-                <label style="margin-top:10px; display:block;">ملاحظة</label><textarea id="exp-notes" rows="2">${e.notes}</textarea>
-                <div class="flex" style="justify-content:flex-end; gap:10px; margin-top:20px;"><button class="btn btn-outline" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveExpense(${id || 'null'})">حفظ</button></div>
-            `);
+            showModal(`<h3 class="card-header">${id ? 'تعديل المصروف' : 'إضافة مصروف جديد'}</h3><div class="grid grid-2"><div><label>التاريخ</label><input type="date" id="exp-date" value="${e.date}" class="en-numbers" style="text-align:right;" required><label>النوع</label><select id="exp-type"><option value="ثابت" ${e.type==='ثابت'?'selected':''}>ثابت</option><option value="متغير" ${e.type==='متغير'?'selected':''}>متغير</option><option value="أصل" ${e.type==='أصل'?'selected':''}>أصل</option></select><label>الفئة</label><select id="exp-cat" onchange="toggleExpCustomCat(this.value)"><option value="إيجار" ${e.category==='إيجار'?'selected':''}>إيجار</option><option value="بنزين" ${e.category==='بنزين'?'selected':''}>بنزين</option><option value="رواتب" ${e.category==='رواتب'?'selected':''}>رواتب</option><option value="مشتريات" ${e.category==='مشتريات'?'selected':''}>مشتريات</option><option value="أخرى" ${e.category==='أخرى'?'selected':''}>أخرى</option></select><input type="text" id="exp-custom-cat" placeholder="اكتب الفئة هنا..." value="${e.customCategory}" style="display:${e.category==='أخرى'?'block':'none'}; margin-top:-5px;"></div><div><label>المبلغ</label><input type="number" id="exp-amount" class="en-numbers" value="${e.amount}" required><label>طريقة الدفع</label><select id="exp-method"><option value="كاش" ${e.method==='كاش'?'selected':''}>كاش</option><option value="تحويل" ${e.method==='تحويل'?'selected':''}>تحويل</option><option value="بطاقة" ${e.method==='بطاقة'?'selected':''}>بطاقة</option></select><label>صورة الفاتورة</label><input type="file" accept="image/*" onchange="encodeExpImg(this)" style="padding:5px;"><img id="exp-img-preview" src="${e.image||''}" style="width:80px; height:80px; object-fit:cover; margin-top:5px; border-radius:6px; display:${e.image?'block':'none'}; cursor:pointer;" onclick="if(this.src) window.open(this.src, '_blank');"><input type="hidden" id="exp-img-b64" value="${e.image||''}"></div></div><label style="margin-top:10px; display:block;">ملاحظة</label><textarea id="exp-notes" rows="2">${e.notes}</textarea><div class="flex" style="justify-content:flex-end; gap:10px; margin-top:20px;"><button class="btn btn-outline" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveExpense(${id || 'null'})">حفظ</button></div>`);
         }
 
         function toggleExpCustomCat(val) { document.getElementById('exp-custom-cat').style.display = (val === 'أخرى') ? 'block' : 'none'; }
@@ -823,24 +843,26 @@
         async function saveExpense(id) {
             const date = document.getElementById('exp-date').value; const amount = parseFloat(document.getElementById('exp-amount').value);
             if(!date || isNaN(amount)) return showToast('تأكد من إدخال التاريخ والمبلغ', 'error');
+            const userName = currentUser.name || currentUser.username;
             const dataObj = { date: date, type: document.getElementById('exp-type').value, category: document.getElementById('exp-cat').value, custom_category: document.getElementById('exp-custom-cat').value, amount: amount, method: document.getElementById('exp-method').value, notes: document.getElementById('exp-notes').value, image: document.getElementById('exp-img-b64').value };
             showLoading();
             if(id) {
                 await supabaseClient.from('thawq_expenses').update(dataObj).eq('id', id);
-                const idx = db.expenses.findIndex(x => x.id === id); if(idx > -1) db.expenses[idx] = { id, customCategory: dataObj.custom_category, ...dataObj };
+                const idx = db.expenses.findIndex(x => x.id === id); if(idx > -1) db.expenses[idx] = { id, customCategory: dataObj.custom_category, ...dataObj, createdBy: db.expenses[idx].createdBy };
                 logAction('تعديل', 'مصروف', `تعديل مصروف بقيمة ${amount} ريال`);
             } else {
+                dataObj.created_by = userName; // Save who created it
                 const { data } = await supabaseClient.from('thawq_expenses').insert([dataObj]).select();
-                if(data && data[0]) db.expenses.unshift({ id: data[0].id, customCategory: data[0].custom_category, ...data[0] });
+                if(data && data[0]) db.expenses.unshift({ id: data[0].id, customCategory: data[0].custom_category, createdBy: userName, ...data[0] });
                 logAction('إضافة', 'مصروف', `إضافة مصروف جديد بقيمة ${amount} ريال`);
             }
             hideLoading(); closeModal(); renderExpenses(); showToast('تم الحفظ بنجاح');
         }
 
         async function deleteExpense(id) {
-            if(confirm('هل أنت متأكد من الحذف؟')) {
+            if(confirm('تأكيد الحذف؟')) {
                 showLoading(); await supabaseClient.from('thawq_expenses').delete().eq('id', id);
-                db.expenses = db.expenses.filter(e => e.id !== id); logAction('حذف', 'مصروف', `قام الموظف بحذف مصروف من النظام`); hideLoading(); renderExpenses(); showToast('تم الحذف');
+                db.expenses = db.expenses.filter(e => e.id !== id); logAction('حذف', 'مصروف', `حذف مصروف من النظام`); hideLoading(); renderExpenses(); showToast('تم الحذف');
             }
         }
 
@@ -860,18 +882,18 @@
             if(filteredExp.length === 0) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">لا توجد مصروفات لهذه الفترة</td></tr>';
             document.getElementById('exp-print-fixed').innerText = fixed.toFixed(2); document.getElementById('exp-print-var').innerText = varExp.toFixed(2); document.getElementById('exp-print-total').innerText = total.toFixed(2);
 
-            logAction('طباعة', 'مصروفات', 'تم طباعة تقرير للمصروفات'); closeModal(); document.getElementById('expense-print-view').classList.add('active-print'); window.print(); setTimeout(() => document.getElementById('expense-print-view').classList.remove('active-print'), 1000);
+            logAction('طباعة', 'مصروفات', 'طباعة تقرير المصروفات'); closeModal(); document.getElementById('expense-print-view').classList.add('active-print'); window.print(); setTimeout(() => document.getElementById('expense-print-view').classList.remove('active-print'), 1000);
         }
         
         // ================= Categories & Products =================
         function openCategoriesModal() {
             let rows = ''; db.categories.forEach(c => { rows += `<tr><td>${c.nameAr}</td><td><button class="btn btn-outline" style="padding:2px 5px;" onclick="editCategory(${c.id}, '${c.nameAr}')">تعديل</button> <button class="btn btn-danger" style="padding:2px 5px;" onclick="delCategory(${c.id})">حذف</button></td></tr>`; });
-            showModal(`<h3 class="card-header">إدارة الفئات</h3><div class="flex" style="gap:10px; margin-bottom:15px;"><input type="text" id="new-cat-name" placeholder="اسم الفئة الجديدة" style="margin:0;"><button class="btn btn-primary" onclick="addCategory()">إضافة</button></div><div class="table-responsive"><table><thead><tr><th>الاسم</th><th>إجراء</th></tr></thead><tbody>${rows}</tbody></table></div><div style="text-align:left; margin-top:15px;"><button class="btn btn-outline" onclick="closeModal(); renderProducts(); loadCatFilter();">إغلاق</button></div>`);
+            showModal(`<h3 class="card-header">إدارة الفئات</h3><div class="flex" style="gap:10px; margin-bottom:15px;"><input type="text" id="new-cat-name" placeholder="اسم الفئة الجديدة" style="margin:0;"><button class="btn btn-primary" onclick="addCategory()">إضافة</button></div><div class="table-responsive"><table style="min-width:100%;"><thead><tr><th>الاسم</th><th>إجراء</th></tr></thead><tbody>${rows}</tbody></table></div><div style="text-align:left; margin-top:15px;"><button class="btn btn-outline" onclick="closeModal(); renderProducts(); loadCatFilter();">إغلاق</button></div>`);
         }
         
-        async function addCategory() { const n = document.getElementById('new-cat-name').value; if(!n) return; showLoading(); const { data } = await supabaseClient.from('thawq_categories').insert([{ name_ar: n }]).select(); if(data && data[0]) db.categories.push({ id: data[0].id, nameAr: data[0].name_ar }); logAction('إضافة', 'فئة', `إنشاء فئة جديدة: ${n}`); hideLoading(); openCategoriesModal(); }
+        async function addCategory() { const n = document.getElementById('new-cat-name').value; if(!n) return; showLoading(); const { data } = await supabaseClient.from('thawq_categories').insert([{ name_ar: n }]).select(); if(data && data[0]) db.categories.push({ id: data[0].id, nameAr: data[0].name_ar }); logAction('إضافة', 'فئة', `إنشاء فئة: ${n}`); hideLoading(); openCategoriesModal(); }
         async function editCategory(id, oldName) { const n = prompt('تعديل اسم الفئة:', oldName); if(n && n !== oldName) { showLoading(); await supabaseClient.from('thawq_categories').update({ name_ar: n }).eq('id', id); const c = db.categories.find(x=>x.id==id); if(c) c.nameAr=n; logAction('تعديل', 'فئة', `تعديل الفئة من ${oldName} إلى ${n}`); hideLoading(); openCategoriesModal(); } }
-        async function delCategory(id) { if(confirm('تأكيد الحذف؟')) { showLoading(); await supabaseClient.from('thawq_categories').delete().eq('id', id); db.categories = db.categories.filter(x=>x.id!=id); logAction('حذف', 'فئة', `تم حذف فئة`); hideLoading(); openCategoriesModal(); } }
+        async function delCategory(id) { if(confirm('تأكيد الحذف؟')) { showLoading(); await supabaseClient.from('thawq_categories').delete().eq('id', id); db.categories = db.categories.filter(x=>x.id!=id); logAction('حذف', 'فئة', `حذف فئة`); hideLoading(); openCategoriesModal(); } }
         function loadCatFilter() { const s = document.getElementById('prod-cat-filter'); if(s){ s.innerHTML = '<option value="all">كل الفئات</option>'; db.categories.forEach(c => s.innerHTML += `<option value="${c.id}">${c.nameAr}</option>`); } }
 
         function renderProducts() {
@@ -879,13 +901,8 @@
             db.products.filter(p => filter==='all' || p.catId == filter).forEach(p => {
                 const cat = db.categories.find(c => c.id == p.catId);
                 const img = p.image ? `<img src="${p.image}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">` : '-';
-                
-                // جلب اسم الموظف
-                let log = db.logs.find(l => l.entity === 'صنف' && l.action_type === 'إضافة' && l.details.includes(p.nameAr));
-                let creator = log ? log.user_name : '-';
-
-                tbody.innerHTML += `<tr><td>${img}</td><td>${p.nameAr}</td><td>${cat?cat.nameAr:''}</td><td class="en-numbers-center">${p.price}</td><td>${p.active?'<span style="color:var(--success)">متاح</span>':'<span style="color:var(--danger)">مخفي</span>'}</td>
-                    <td style="font-size:0.85rem; color:var(--text-muted);"><i class="fas fa-user-circle"></i> ${creator}</td>
+                tbody.innerHTML += `<tr><td>${img}</td><td><div style="font-weight:bold;">${p.nameAr}</div><div style="font-size:0.8rem; color:var(--text-muted);">${cat?cat.nameAr:''}</div></td><td class="en-numbers-center">${p.price}</td><td>${p.active?'<span style="color:var(--success)">متاح</span>':'<span style="color:var(--danger)">مخفي</span>'}</td>
+                    <td><span class="created-by-badge"><i class="fas fa-user"></i> ${p.createdBy}</span></td>
                     <td><button class="icon-btn-solid warning" style="display:inline-flex;" onclick="openProductModal(${p.id})"><i class="fas fa-edit"></i></button><button class="icon-btn-solid danger" style="display:inline-flex; margin-right:5px;" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button></td></tr>`;
             });
         }
@@ -901,14 +918,16 @@
 
         async function saveProduct(id) {
             const nameAr = document.getElementById('prod-ar').value; const price = parseFloat(document.getElementById('prod-price').value); if(!nameAr || isNaN(price)) return;
+            const userName = currentUser.name || currentUser.username;
             const dataObj = { name_ar: nameAr, cat_id: parseInt(document.getElementById('prod-cat').value), price: price, active: document.getElementById('prod-active').checked, image: document.getElementById('prod-img-b64').value };
             showLoading();
             if(id) {
-                await supabaseClient.from('thawq_products').update(dataObj).eq('id', id); const idx = db.products.findIndex(x => x.id === id); if(idx > -1) db.products[idx] = { id, nameAr: dataObj.name_ar, catId: dataObj.cat_id, ...dataObj };
-                logAction('تعديل', 'صنف', `تعديل بيانات الصنف: ${nameAr}`);
+                await supabaseClient.from('thawq_products').update(dataObj).eq('id', id); const idx = db.products.findIndex(x => x.id === id); if(idx > -1) db.products[idx] = { id, nameAr: dataObj.name_ar, catId: dataObj.cat_id, ...dataObj, createdBy: db.products[idx].createdBy };
+                logAction('تعديل', 'صنف', `تعديل صنف: ${nameAr}`);
             } else {
-                const { data } = await supabaseClient.from('thawq_products').insert([dataObj]).select(); if(data && data[0]) db.products.push({ id: data[0].id, nameAr: data[0].name_ar, catId: data[0].cat_id, ...data[0] });
-                logAction('إضافة', 'صنف', `إضافة صنف جديد: ${nameAr}`);
+                dataObj.created_by = userName;
+                const { data } = await supabaseClient.from('thawq_products').insert([dataObj]).select(); if(data && data[0]) db.products.push({ id: data[0].id, nameAr: data[0].name_ar, catId: data[0].cat_id, createdBy: userName, ...data[0] });
+                logAction('إضافة', 'صنف', `صنف جديد: ${nameAr}`);
             }
             hideLoading(); closeModal(); renderProducts(); showToast('تم الحفظ');
         }
@@ -920,12 +939,8 @@
             const tbody = document.querySelector('#invoices-table tbody'); tbody.innerHTML = ''; const search = document.getElementById('inv-search').value.toLowerCase();
             db.invoices.filter(i => i.invNumber.toLowerCase().includes(search) || (i.customerName && i.customerName.toLowerCase().includes(search))).forEach(inv => {
                 let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : (inv.status==='ملغاة' ? '#666' : 'var(--danger)'));
-                
-                // جلب اسم الموظف من السجل
-                let log = db.logs.find(l => l.entity === 'فاتورة' && l.action_type === 'إضافة' && l.details.includes(inv.invNumber));
-                let creator = log ? log.user_name : '-';
-
-                tbody.innerHTML += `<tr class="clickable-row" onclick="viewInvoiceDetails(${inv.id})"><td class="en-numbers" style="text-align:right">${inv.invNumber}</td><td class="en-numbers" style="text-align:right; font-size:0.9rem;">${inv.date}</td><td>${inv.customerName}</td><td class="en-numbers-center">${inv.total.toFixed(2)}</td><td><span style="background:${statusColor}; padding:3px 8px; border-radius:4px; color:#fff; font-size:0.8rem;">${inv.status}</span></td><td style="font-size:0.85rem; color:var(--text-muted);"><i class="fas fa-user-circle"></i> ${creator}</td></tr>`;
+                tbody.innerHTML += `<tr class="clickable-row" onclick="viewInvoiceDetails(${inv.id})"><td class="en-numbers" style="text-align:right">${inv.invNumber}</td><td class="en-numbers" style="text-align:right; font-size:0.9rem;">${inv.date}</td><td>${inv.customerName}</td><td class="en-numbers-center">${inv.total.toFixed(2)}</td><td><span style="background:${statusColor}; padding:3px 8px; border-radius:4px; color:#fff; font-size:0.8rem;">${inv.status}</span></td>
+                <td><span class="created-by-badge"><i class="fas fa-user"></i> ${inv.createdBy}</span></td></tr>`;
             });
         }
         
@@ -934,22 +949,13 @@
             let itemsHtml = ''; inv.items.forEach(i => { itemsHtml += `<tr><td style="text-align:right">${i.name}</td><td class="en-numbers-center">${i.qty}</td><td class="en-numbers-center">${parseFloat(i.price).toFixed(2)}</td><td class="en-numbers-center">${(i.price*i.qty).toFixed(2)}</td></tr>`; });
             let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : (inv.status==='ملغاة' ? '#666' : 'var(--danger)'));
 
-            // جلب سجل حركات هذه الفاتورة حصراً
-            let invHistory = '';
-            const iLogs = db.logs.filter(l => l.entity === 'فاتورة' && l.details.includes(inv.invNumber));
-            iLogs.forEach(l => {
-                const d = new Date(l.created_at); const dStr = d.toLocaleDateString('en-GB') + ' ' + d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-                invHistory += `<div style="font-size:0.85rem; padding:6px 0; border-bottom:1px solid #eee;"><strong style="color:var(--primary)"><i class="fas fa-user"></i> ${l.user_name}</strong>: ${l.action_type} <span style="float:left; direction:ltr; color:#888;">${dStr}</span></div>`;
-            });
-            if(!invHistory) invHistory = '<div style="font-size:0.85rem; color:#999; text-align:center;">لا توجد سجلات مفصلة</div>';
-
             showModal(`
                 <div class="flex" style="justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
                     <h3 style="color:var(--primary); display:flex; align-items:center; gap:10px;"><button class="icon-btn" onclick="closeModal()" style="color:var(--text-muted); background:rgba(0,0,0,0.05); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-times"></i></button>تفاصيل الفاتورة <span class="en-numbers" style="font-size:1rem; margin-right:10px;">${inv.invNumber}</span></h3>
                     <span style="background:${statusColor}; padding:4px 10px; border-radius:4px; color:#fff; font-size:0.9rem;">${inv.status}</span>
                 </div>
                 <div class="grid grid-2" style="font-size:0.95rem; margin-bottom:20px;"><div><strong>العميل:</strong> ${inv.customerName}</div><div><strong>التاريخ:</strong> <span class="en-numbers" style="float:left;">${inv.date}</span></div></div>
-                <div class="table-responsive"><table style="font-size:0.9rem; margin-bottom:20px; width:100%; min-width:100%;"><thead><tr><th style="text-align:right; width:40%;">الصنف</th><th style="text-align:center">الكمية</th><th style="text-align:center">السعر</th><th style="text-align:center">الإجمالي</th></tr></thead><tbody>${itemsHtml}</tbody></table></div>
+                <div class="table-responsive"><table style="font-size:0.9rem; margin-bottom:20px; min-width:100%;"><thead><tr><th style="text-align:right; width:40%;">الصنف</th><th style="text-align:center">الكمية</th><th style="text-align:center">السعر</th><th style="text-align:center">الإجمالي</th></tr></thead><tbody>${itemsHtml}</tbody></table></div>
                 <div class="card" style="background:rgba(0,0,0,0.02); padding:15px; font-size:0.95rem;">
                     <div class="flex" style="justify-content:space-between;"><span>المجموع الفرعي:</span> <span class="en-numbers">${inv.subtotal.toFixed(2)} SAR</span></div>
                     <div class="flex" style="justify-content:space-between; margin-top:5px;"><span>الخصم:</span> <span class="en-numbers">${inv.discountVal.toFixed(2)} SAR</span></div>
@@ -957,12 +963,6 @@
                     <hr style="margin:10px 0; border:0; border-top:1px solid var(--border);">
                     <div class="flex" style="justify-content:space-between; font-weight:bold; font-size:1.2rem; color:var(--primary);"><span>الإجمالي:</span> <span class="en-numbers">${inv.total.toFixed(2)} SAR</span></div>
                 </div>
-                
-                <h4 style="color:var(--primary); margin-top:20px; font-size:1rem; border-bottom:1px solid var(--border); padding-bottom:5px;"><i class="fas fa-history"></i> سجل حركات الفاتورة</h4>
-                <div style="max-height:100px; overflow-y:auto; background:rgba(0,0,0,0.01); padding:10px; border-radius:6px; margin-bottom:15px;">
-                    ${invHistory}
-                </div>
-
                 <div class="flex" style="justify-content:space-between; margin-top:25px; flex-wrap:wrap; gap:10px;">
                     <div class="flex" style="gap:10px; flex-wrap:wrap;"><button class="btn btn-outline" onclick="printInvoice(${inv.id})"><i class="fas fa-print"></i> طباعة</button><button class="btn btn-success" onclick="sendInvoiceWA(${inv.id})"><i class="fab fa-whatsapp"></i> إرسال (PDF)</button></div>
                     <div class="flex" style="gap:10px; flex-wrap:wrap;"><button class="icon-btn-solid warning" onclick="editInvoiceStatus(${inv.id})" title="تعديل الحالة"><i class="fas fa-edit"></i></button>${currentUser.permissions['users'] ? `<button class="icon-btn-solid danger" onclick="deleteInvoice(${inv.id})" title="حذف نهائي"><i class="fas fa-trash"></i></button>` : ''}</div>
@@ -971,7 +971,7 @@
         }
 
         async function deleteInvoice(id) { 
-            if(confirm('هل أنت متأكد من الحذف النهائي؟')) { 
+            if(confirm('تأكيد الحذف النهائي؟')) { 
                 const inv = db.invoices.find(i => i.id === id); showLoading(); await supabaseClient.from('thawq_invoices').delete().eq('id', id); db.invoices=db.invoices.filter(i=>i.id!=id); 
                 logAction('حذف', 'فاتورة', `حذف نهائي للفاتورة رقم ${inv ? inv.invNumber : id}`); hideLoading(); renderInvoices(); closeModal(); showToast('تم الحذف');
             } 
@@ -996,7 +996,7 @@
         function printInvoice(id) {
             const inv = db.invoices.find(i => i.id === id); if(!inv) return;
             document.getElementById('print-store-name').innerText = db.settings.storeName; document.getElementById('print-vat-num').innerText = db.settings.vatNumber || '-'; document.getElementById('print-phone').innerText = db.settings.phone || '-'; document.getElementById('print-inv-num').innerText = inv.invNumber; document.getElementById('print-date').innerText = inv.date; document.getElementById('print-customer').innerText = inv.customerName; document.getElementById('print-status').innerText = inv.status;
-            document.getElementById('print-cashier').innerText = currentUser.name || currentUser.username;
+            document.getElementById('print-cashier').innerText = inv.createdBy;
             const tbody = document.getElementById('print-items'); tbody.innerHTML = ''; inv.items.forEach(i => { tbody.innerHTML += `<tr><td style="text-align:right">${i.name}</td><td class="en-numbers-center">${i.qty}</td><td class="en-numbers-center">${parseFloat(i.price).toFixed(2)}</td><td class="en-numbers-center">${(i.price*i.qty).toFixed(2)}</td></tr>`; });
             document.getElementById('print-subtotal').innerText = inv.subtotal.toFixed(2); document.getElementById('print-discount').innerText = inv.discountVal.toFixed(2); document.getElementById('print-total').innerText = inv.total.toFixed(2);
             if(inv.status === 'مدفوع جزئيا') { document.getElementById('print-paid-row').style.display = 'block'; document.getElementById('print-paid-amount').innerText = (inv.paidAmount !== undefined ? parseFloat(inv.paidAmount) : parseFloat(inv.total)).toFixed(2); } else { document.getElementById('print-paid-row').style.display = 'none'; }
@@ -1005,7 +1005,7 @@
 
         function sendInvoiceWA(id) {
             const inv = db.invoices.find(i => i.id === id); if(!inv) return;
-            document.getElementById('print-store-name').innerText = db.settings.storeName; document.getElementById('print-vat-num').innerText = db.settings.vatNumber || '-'; document.getElementById('print-phone').innerText = db.settings.phone || '-'; document.getElementById('print-inv-num').innerText = inv.invNumber; document.getElementById('print-date').innerText = inv.date; document.getElementById('print-customer').innerText = inv.customerName; document.getElementById('print-status').innerText = inv.status; document.getElementById('print-cashier').innerText = currentUser.name || currentUser.username;
+            document.getElementById('print-store-name').innerText = db.settings.storeName; document.getElementById('print-vat-num').innerText = db.settings.vatNumber || '-'; document.getElementById('print-phone').innerText = db.settings.phone || '-'; document.getElementById('print-inv-num').innerText = inv.invNumber; document.getElementById('print-date').innerText = inv.date; document.getElementById('print-customer').innerText = inv.customerName; document.getElementById('print-status').innerText = inv.status; document.getElementById('print-cashier').innerText = inv.createdBy;
             const tbody = document.getElementById('print-items'); tbody.innerHTML = ''; inv.items.forEach(i => { tbody.innerHTML += `<tr><td style="text-align:right">${i.name}</td><td class="en-numbers-center">${i.qty}</td><td class="en-numbers-center">${parseFloat(i.price).toFixed(2)}</td><td class="en-numbers-center">${(i.price*i.qty).toFixed(2)}</td></tr>`; });
             document.getElementById('print-subtotal').innerText = inv.subtotal.toFixed(2); document.getElementById('print-discount').innerText = inv.discountVal.toFixed(2); document.getElementById('print-total').innerText = inv.total.toFixed(2);
             if(inv.status === 'مدفوع جزئيا') { document.getElementById('print-paid-row').style.display = 'block'; document.getElementById('print-paid-amount').innerText = (inv.paidAmount !== undefined ? parseFloat(inv.paidAmount) : parseFloat(inv.total)).toFixed(2); } else { document.getElementById('print-paid-row').style.display = 'none'; }
@@ -1038,17 +1038,18 @@
         async function checkout() {
             if(posCart.length === 0) return showToast('السلة فارغة', 'error'); const t = updateCartTotals(); const custSel = document.getElementById('pos-cust'); if(!custSel.value) return showToast('يجب اختيار عميل', 'error');
             const meta = generateInvoiceMeta(); let custRawText = custSel.options[custSel.selectedIndex].text; let cleanCustName = custRawText.split(' -')[0].trim();
-            const dataObj = { inv_number: meta.invNum, date: meta.dateStr, customer_id: parseInt(custSel.value), customer_name: cleanCustName, items: posCart, subtotal: t.sub, discount_val: t.discVal, total: t.total, status: 'مدفوع بالكامل', paid_amount: t.total };
+            const userName = currentUser.name || currentUser.username;
+            const dataObj = { inv_number: meta.invNum, date: meta.dateStr, customer_id: parseInt(custSel.value), customer_name: cleanCustName, items: posCart, subtotal: t.sub, discount_val: t.discVal, total: t.total, status: 'مدفوع بالكامل', paid_amount: t.total, created_by: userName };
             showLoading('جاري إصدار الفاتورة...');
             const { data } = await supabaseClient.from('thawq_invoices').insert([dataObj]).select();
-            if(data && data[0]) { db.invoices.unshift({ id: data[0].id, invNumber: data[0].inv_number, date: data[0].date, customerId: data[0].customer_id, customerName: data[0].customer_name, items: data[0].items, subtotal: data[0].subtotal, discountVal: data[0].discount_val, total: data[0].total, status: data[0].status, paidAmount: data[0].paid_amount }); }
-            logAction('إضافة', 'فاتورة', `إصدار فاتورة جديدة رقم ${meta.invNum} بقيمة ${t.total.toFixed(2)}`); hideLoading(); closeModal(); renderInvoices(); showToast('تم الإصدار');
+            if(data && data[0]) { db.invoices.unshift({ id: data[0].id, invNumber: data[0].inv_number, date: data[0].date, customerId: data[0].customer_id, customerName: data[0].customer_name, items: data[0].items, subtotal: data[0].subtotal, discountVal: data[0].discount_val, total: data[0].total, status: data[0].status, paidAmount: data[0].paid_amount, createdBy: userName }); }
+            logAction('إضافة', 'فاتورة', `إصدار فاتورة جديدة رقم ${meta.invNum} للعميل ${cleanCustName} بقيمة ${t.total.toFixed(2)}`); hideLoading(); closeModal(); renderInvoices(); showToast('تم الإصدار');
         }
 
         // ================= Customers =================
         function renderCustomers() {
             const grid = document.getElementById('customers-grid'); grid.innerHTML = ''; const search = document.getElementById('cust-search').value.toLowerCase();
-            db.customers.filter(c=>c.name.toLowerCase().includes(search) || c.phone.includes(search)).forEach(c => { grid.innerHTML += `<div class="card clickable-row" onclick="viewCustomerDetails(${c.id})"><h3 style="color:var(--primary)">${c.name}</h3><p class="en-numbers" style="text-align:right; margin-top:5px;"><i class="fas fa-phone"></i> ${c.phone||'-'}</p></div>`; });
+            db.customers.filter(c=>c.name.toLowerCase().includes(search) || c.phone.includes(search)).forEach(c => { grid.innerHTML += `<div class="card clickable-row" onclick="viewCustomerDetails(${c.id})"><h3 style="color:var(--primary)">${c.name}</h3><p class="en-numbers" style="text-align:right; margin-top:5px;"><i class="fas fa-phone"></i> ${c.phone||'-'}</p><div style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;"><i class="fas fa-user-circle"></i> ${c.createdBy}</div></div>`; });
         }
 
         function viewCustomerDetails(id) {
@@ -1057,24 +1058,12 @@
             if(custInvoices.length === 0) { historyHtml = '<tr><td colspan="4" style="text-align:center;">لا توجد طلبات سابقة</td></tr>'; } 
             else { custInvoices.forEach(inv => { let statusColor = inv.status==='مدفوع بالكامل' ? 'var(--success)' : (inv.status==='مدفوع جزئيا' ? 'var(--warning)' : (inv.status==='ملغاة' ? '#666' : 'var(--danger)')); historyHtml += `<tr class="clickable-row" onclick="closeModal(); viewInvoiceDetails(${inv.id})"><td class="en-numbers" style="text-align:right">${inv.invNumber}</td><td class="en-numbers" style="text-align:right">${inv.date.split(' ')[0]}</td><td class="en-numbers-center">${inv.total.toFixed(2)}</td><td><span style="background:${statusColor}; padding:2px 6px; border-radius:4px; color:#fff; font-size:0.8rem;">${inv.status}</span></td></tr>`; }); }
 
-            let cHistory = '';
-            const cLogs = db.logs.filter(l => l.entity === 'عميل' && l.details.includes(c.name));
-            cLogs.forEach(l => {
-                const d = new Date(l.created_at); const dStr = d.toLocaleDateString('en-GB') + ' ' + d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-                cHistory += `<div style="font-size:0.85rem; padding:6px 0; border-bottom:1px solid #eee;"><strong style="color:var(--primary)"><i class="fas fa-user"></i> ${l.user_name}</strong>: ${l.action_type} <span style="float:left; direction:ltr; color:#888;">${dStr}</span></div>`;
-            });
-            if(!cHistory) cHistory = '<div style="font-size:0.85rem; color:#999; text-align:center;">لا توجد سجلات مفصلة</div>';
-
             showModal(`
                 <div class="flex" style="justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:15px;">
                     <h3 style="color:var(--primary); display:flex; align-items:center; gap:10px;"><button class="icon-btn" onclick="closeModal()" style="color:var(--text-muted); background:rgba(0,0,0,0.05); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-times"></i></button>ملف العميل: ${c.name}</h3>
                     <div style="display:flex; gap:5px;"><button class="icon-btn-solid warning" onclick="openCustomerModal(${c.id})"><i class="fas fa-edit"></i></button>${currentUser.permissions['users'] ? `<button class="icon-btn-solid danger" onclick="deleteCustomer(${c.id})"><i class="fas fa-trash"></i></button>` : ''}</div>
                 </div>
                 <div class="grid grid-2" style="font-size:0.95rem; margin-bottom:20px;"><div><strong>الجوال:</strong> <span class="en-numbers" style="float:left;">${c.phone||'-'}</span></div><div><strong>العنوان الأساسي:</strong><br>${c.address1||'-'}</div><div><strong>العنوان الإضافي:</strong><br>${c.address2||'-'}</div><div style="grid-column: 1 / -1;"><strong>ملاحظات:</strong><br><p style="background:rgba(0,0,0,0.02); padding:10px; border-radius:6px; min-height:40px;">${c.notes||'لا توجد ملاحظات'}</p></div></div>
-                
-                <h4 style="color:var(--primary); margin-top:20px; font-size:1rem; border-bottom:1px solid var(--border); padding-bottom:5px;"><i class="fas fa-history"></i> سجل حركات العميل</h4>
-                <div style="max-height:100px; overflow-y:auto; background:rgba(0,0,0,0.01); padding:10px; border-radius:6px; margin-bottom:15px;">${cHistory}</div>
-
                 <h4 style="color:var(--primary); margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:5px;">سجل الطلبات</h4>
                 <div class="table-responsive"><table style="font-size:0.9rem; margin-top:0; min-width:100%;"><thead><tr><th style="text-align:right">رقم الفاتورة</th><th style="text-align:right">التاريخ</th><th style="text-align:center">المجموع</th><th style="text-align:right">الحالة</th></tr></thead><tbody>${historyHtml}</tbody></table></div>
             `, 'modal-lg');
@@ -1087,15 +1076,24 @@
 
         async function saveCustomer(id) {
             const n = document.getElementById('nc-name').value; if(!n) return showToast('الرجاء إدخال اسم العميل', 'error');
+            const userName = currentUser.name || currentUser.username;
             const dataObj = { name: n, phone: document.getElementById('nc-phone').value, address1: document.getElementById('nc-addr1').value, address2: document.getElementById('nc-addr2').value, notes: document.getElementById('nc-notes').value };
             showLoading('جاري الحفظ...');
-            if(id) { await supabaseClient.from('thawq_customers').update(dataObj).eq('id', id); const idx = db.customers.findIndex(x => x.id === id); if(idx > -1) db.customers[idx] = { id, ...dataObj }; logAction('تعديل', 'عميل', `تحديث بيانات العميل: ${n}`); } 
-            else { const { data } = await supabaseClient.from('thawq_customers').insert([dataObj]).select(); if(data && data[0]) db.customers.push({ id: data[0].id, ...dataObj }); logAction('إضافة', 'عميل', `تسجيل عميل جديد: ${n}`); }
+            if(id) { 
+                await supabaseClient.from('thawq_customers').update(dataObj).eq('id', id); 
+                const idx = db.customers.findIndex(x => x.id === id); if(idx > -1) db.customers[idx] = { id, ...dataObj, createdBy: db.customers[idx].createdBy }; 
+                logAction('تعديل', 'عميل', `تحديث بيانات العميل: ${n}`);
+            } else { 
+                dataObj.created_by = userName;
+                const { data } = await supabaseClient.from('thawq_customers').insert([dataObj]).select(); 
+                if(data && data[0]) db.customers.push({ id: data[0].id, createdBy: userName, ...dataObj }); 
+                logAction('إضافة', 'عميل', `تسجيل عميل جديد: ${n}`);
+            }
             hideLoading(); renderCustomers(); if(id) viewCustomerDetails(id); else closeModal(); showToast('تم الحفظ');
         }
 
         async function deleteCustomer(id) {
-            if(confirm('تأكيد الحذف النهائي؟')) { const c = db.customers.find(x => x.id === id); showLoading(); await supabaseClient.from('thawq_customers').delete().eq('id', id); db.customers = db.customers.filter(x => x.id !== id); logAction('حذف', 'عميل', `حذف العميل: ${c ? c.name : id}`); hideLoading(); renderCustomers(); closeModal(); showToast('تم الحذف'); }
+            if(confirm('تأكيد الحذف النهائي؟')) { const c = db.customers.find(x => x.id === id); showLoading(); await supabaseClient.from('thawq_customers').delete().eq('id', id); db.customers = db.customers.filter(x => x.id !== id); logAction('حذف', 'عميل', `قام الموظف بحذف العميل: ${c ? c.name : id}`); hideLoading(); renderCustomers(); closeModal(); showToast('تم الحذف'); }
         }
 
         // ================= Direct Database Users Management =================
@@ -1117,8 +1115,8 @@
             const d = { name: document.getElementById('usr-name').value, username: userInput, pass: passInput, active: document.getElementById('usr-active').checked, permissions: {} };
             Object.keys(navDict).forEach(k => { const el = document.getElementById(`perm-${k}`); d.permissions[k] = el ? el.checked : false; });
             showLoading();
-            if(id) { if(d.username.includes('admin') || d.username.includes('smartflow')) { d.active = true; Object.keys(navDict).forEach(k => d.permissions[k] = true); } await supabaseClient.from('thawq_users').update(d).eq('id', id); const idx = db.users.findIndex(x=>x.id==id); if(idx > -1) db.users[idx] = {id, ...d}; logAction('تعديل', 'نظام', `تعديل صلاحيات المستخدم: ${userInput}`); } 
-            else { const {data} = await supabaseClient.from('thawq_users').insert([d]).select(); if(data && data[0]) db.users.push({id: data[0].id, ...d}); logAction('إضافة', 'نظام', `إنشاء حساب موظف: ${userInput}`); }
+            if(id) { if(d.username.includes('admin') || d.username.includes('smartflow')) { d.active = true; Object.keys(navDict).forEach(k => d.permissions[k] = true); } await supabaseClient.from('thawq_users').update(d).eq('id', id); const idx = db.users.findIndex(x=>x.id==id); if(idx > -1) db.users[idx] = {id, ...d}; logAction('تعديل', 'نظام', `تعديل مستخدم: ${userInput}`); } 
+            else { const {data} = await supabaseClient.from('thawq_users').insert([d]).select(); if(data && data[0]) db.users.push({id: data[0].id, ...d}); logAction('إضافة', 'نظام', `إنشاء مستخدم: ${userInput}`); }
             hideLoading(); closeModal(); renderUsers(); if(currentUser && d.username === currentUser.username) { currentUser = db.users.find(u=>u.username===d.username); sessionStorage.setItem('thawq_session', JSON.stringify(currentUser)); renderSidebar(); } showToast('تم الحفظ');
         }
 
@@ -1126,7 +1124,7 @@
         function loadSettingsUI() { document.getElementById('set-storeName').value = db.settings.storeName; document.getElementById('set-phone').value = db.settings.phone || ''; document.getElementById('set-vatNumber').value = db.settings.vatNumber || ''; document.getElementById('set-theme').value = db.settings.theme; renderReorderList(); }
         function renderReorderList() { const list = document.getElementById('reorder-nav-list'); list.innerHTML = ''; db.settings.navOrder.forEach((key, index) => { list.innerHTML += `<li class="reorder-item"><span><i class="fas ${navDict[key].icon}" style="margin-left:5px;"></i> ${navDict[key].label}</span><div><button class="icon-btn" onclick="moveNav(${index}, -1)" ${index===0?'disabled style="opacity:0.3"':''}><i class="fas fa-arrow-up"></i></button><button class="icon-btn" onclick="moveNav(${index}, 1)" ${index===db.settings.navOrder.length-1?'disabled style="opacity:0.3"':''}><i class="fas fa-arrow-down"></i></button></div></li>`; }); }
         async function moveNav(idx, dir) { const arr = db.settings.navOrder; if(idx+dir < 0 || idx+dir >= arr.length) return; const temp = arr[idx]; arr[idx] = arr[idx+dir]; arr[idx+dir] = temp; renderReorderList(); showLoading(); await supabaseClient.from('thawq_settings').update({nav_order: arr}).eq('id', 1); hideLoading(); }
-        async function saveSettings() { const dataObj = { phone: document.getElementById('set-phone').value, vat_number: document.getElementById('set-vatNumber').value, theme: document.getElementById('set-theme').value }; showLoading(); await supabaseClient.from('thawq_settings').update(dataObj).eq('id', 1); db.settings.phone = dataObj.phone; db.settings.vatNumber = dataObj.vat_number; db.settings.theme = dataObj.theme; logAction('تعديل', 'إعدادات', `تغيير إعدادات المتجر الأساسية`); applyThemeSetting(); renderSidebar(); hideLoading(); showToast('تم الحفظ'); }
+        async function saveSettings() { const dataObj = { phone: document.getElementById('set-phone').value, vat_number: document.getElementById('set-vatNumber').value, theme: document.getElementById('set-theme').value }; showLoading(); await supabaseClient.from('thawq_settings').update(dataObj).eq('id', 1); db.settings.phone = dataObj.phone; db.settings.vatNumber = dataObj.vat_number; db.settings.theme = dataObj.theme; logAction('تعديل', 'إعدادات', `تغيير إعدادات المتجر`); applyThemeSetting(); renderSidebar(); hideLoading(); showToast('تم الحفظ'); }
         function applyThemeSetting() { applyTheme(document.getElementById('set-theme').value); }
 
         // ================= Boot & PWA Init =================
@@ -1138,7 +1136,7 @@
                 if(verifyUser) {
                     currentUser = verifyUser;
                     const isAdmin = currentUser.username.includes('admin') || currentUser.username.includes('smartflow') || (currentUser.permissions && currentUser.permissions['users']);
-                    if(isAdmin) { if(!currentUser.permissions) currentUser.permissions = {}; currentUser.permissions['logs'] = true; }
+                    if(isAdmin) { if(!currentUser.permissions) currentUser.permissions = {}; currentUser.permissions['syslogs'] = true; }
                     sessionStorage.setItem('thawq_session', JSON.stringify(currentUser));
                     document.getElementById('logged-user-name').innerText = currentUser.name || currentUser.username;
                     document.getElementById('logged-user-name').style.display = 'inline-block';
